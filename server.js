@@ -2,9 +2,6 @@
 const express = require('express')
 const next = require('next')
 
-const dev = process.env.NODE_ENV !== 'production'
-const nextApp = next({ dev })
-const handle = nextApp.getRequestHandler()
 const fileUpload = require('express-fileupload')
 const path = require('path')
 const { fileURLToPath } = require('url')
@@ -18,9 +15,13 @@ const constants = require('./api/helpers/constants.js')
 const webhook = require('./api/controller/webhook.js')
 const { authMe } = require('./api/controller/authorization.js')
 
-const PORT = constants.port
+const port = constants.port
 const sub_uri = constants.SUB_URI
 
+const dev = process.env.NODE_ENV !== 'production'
+const hostname = 'localhost'
+const nextApp = next({ dev, port, hostname })
+const handle = nextApp.getRequestHandler()
 nextApp.prepare().then(() => {
   const app = express()
 
@@ -44,7 +45,7 @@ nextApp.prepare().then(() => {
     return handle(req, res)
   })
 
-  app.listen(process.env.port || 8080, err => {
+  app.listen(port, err => {
     if (err) throw err
     console.log('> Ready on http://localhost:3000')
   })
