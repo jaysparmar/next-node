@@ -44,7 +44,7 @@ nextApp.prepare().then(() => {
     return handle(req, res)
   })
 
-  app.listen(8080, err => {
+  app.listen(process.env.port || 8080, err => {
     if (err) throw err
     console.log('> Ready on http://localhost:3000')
   })
