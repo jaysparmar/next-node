@@ -1,7 +1,7 @@
 const knex = require('../config/mysql_db.js')
 
 const table = 'admins'
-const adminRoleTable = 'admin_roles'
+const adminRoleTable = 'roles'
 
 const insertAdmin = data => {
   return knex(table).insert(data)
@@ -24,17 +24,14 @@ const getUserDetail = where => {
 }
 
 const paginateAdmin = (limit, offset, searchFrom, status, sort, search, order) => {
-  let rows = knex(table)
-    .select(
-      `${table}.id`,
-      `${table}.firstname`,
-      `${table}.lastname`,
-      `${table}.email`,
-      `${table}.status`,
-      `${table}.role`,
-      `${adminRoleTable}.role_name`
-    )
-    .leftJoin(adminRoleTable, `${adminRoleTable}.id`, '=', `${table}.role`)
+  let rows = knex(table).select(
+    `${table}.id`,
+    `${table}.firstname`,
+    `${table}.lastname`,
+    `${table}.email`,
+    `${table}.status`,
+    `${table}.role`
+  )
 
   if (status) rows.where(`${table}.status`, `${status}`)
 
@@ -53,7 +50,7 @@ const paginateAdmin = (limit, offset, searchFrom, status, sort, search, order) =
 }
 
 const paginateAdminTotal = async (searchFrom, search, status) => {
-  let results = knex(table).leftJoin(adminRoleTable, `${adminRoleTable}.id`, '=', `${table}.role`)
+  let results = knex(table)
 
   if (status) results = results.where('status', status)
 

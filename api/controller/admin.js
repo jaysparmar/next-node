@@ -69,7 +69,6 @@ const paginateAdmin = async (req, res) => {
 
     let searchFrom = ['firstname', 'lastname', 'email']
     const total = await model.paginateAdminTotal(searchFrom, search, status)
-    const roles = await knex('admin_roles').select('role_name as label', 'id as value')
 
     const rows = await model.paginateAdmin(limit, offset, searchFrom, status, sort, search, order)
 
@@ -98,8 +97,7 @@ const paginateAdmin = async (req, res) => {
       message: 'Admin received successfully.',
       data: {
         rows: data_rows,
-        total,
-        roles
+        total
       }
     })
     res.end()
@@ -231,52 +229,57 @@ const rolesListing = async (req, res) => {
 
 const modulesListing = async (req, res) => {
   // try {
-  if (!req.validate('admin', 'read')) {
-    return false
-  }
-  const { role_id = -1 } = req.body
+  // if (!req.validate('admin', 'read')) {
+  //   return false
+  // }
 
-  let data = await knex('admin_roles as ar')
-    .leftJoin('admin_roles_permissions as rp', 'ar.id', 'rp.role_id')
-    .leftJoin('modules as m', 'm.id', 'rp.module_id')
-    .where('ar.id', '=', role_id)
-    .select(
-      'm.module_key',
-      'rp.createP as create',
-      'rp.updateP as update',
-      'rp.deleteP as delete',
-      'rp.readP as read',
-      'ar.role_name'
-    )
-  let role_name = ''
-  if (data.length && data.length != 0) {
-    role_name = data[0].role_name
-  }
+  const modules = require('../config/modules.js')
 
-  let permissions = data.map(val => {
-    delete val.role_name
-    Object.keys(val).map(data => {
-      if (data != 'module_key') {
-        if (val[data] == '1') {
-          val[data] = true
-        } else {
-          val[data] = false
-        }
-      }
-    })
+  return res.json(modules)
 
-    return val
-  })
-  const modules = await knex('modules')
-  res.json({
-    error: false,
-    message: 'Modules recieved successfully',
-    data: {
-      modules,
-      permissions,
-      role_name
-    }
-  })
+  // const { role_id = -1 } = req.body
+
+  // let data = await knex('admin_roles as ar')
+  //   .leftJoin('admin_roles_permissions as rp', 'ar.id', 'rp.role_id')
+  //   .leftJoin('modules as m', 'm.id', 'rp.module_id')
+  //   .where('ar.id', '=', role_id)
+  //   .select(
+  //     'm.module_key',
+  //     'rp.createP as create',
+  //     'rp.updateP as update',
+  //     'rp.deleteP as delete',
+  //     'rp.readP as read',
+  //     'ar.role_name'
+  //   )
+  // let role_name = ''
+  // if (data.length && data.length != 0) {
+  //   role_name = data[0].role_name
+  // }
+
+  // let permissions = data.map(val => {
+  //   delete val.role_name
+  //   Object.keys(val).map(data => {
+  //     if (data != 'module_key') {
+  //       if (val[data] == '1') {
+  //         val[data] = true
+  //       } else {
+  //         val[data] = false
+  //       }
+  //     }
+  //   })
+
+  //   return val
+  // })
+  // const modules = await knex('modules')
+  // res.json({
+  //   error: false,
+  //   message: 'Modules recieved successfully',
+  //   data: {
+  //     modules,
+  //     permissions,
+  //     role_name
+  //   }
+  // })
 
   return res.end()
 

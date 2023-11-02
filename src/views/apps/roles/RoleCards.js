@@ -28,32 +28,22 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import TableContainer from '@mui/material/TableContainer'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import axios from 'axios'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
+import toast from 'react-hot-toast'
 
-const cardData = [
-  { totalUsers: 4, title: 'Administrator', avatars: ['1.png', '2.png', '3.png', '4.png'] },
-  { totalUsers: 7, title: 'Manager', avatars: ['5.png', '6.png', '7.png', '8.png', '1.png', '2.png', '3.png'] },
-  { totalUsers: 5, title: 'Users', avatars: ['4.png', '5.png', '6.png', '7.png', '8.png'] },
-  { totalUsers: 3, title: 'Support', avatars: ['1.png', '2.png', '3.png'] },
-  { totalUsers: 2, title: 'Restricted User', avatars: ['4.png', '5.png'] }
-]
-
-const rolesArr = [
-  'User Management',
-  'Content Management',
-  'Disputes Management',
-  'Database Management',
-  'Financial Management',
-  'Reporting',
-  'API Control',
-  'Repository Management',
-  'Payroll'
-]
+// const cardData = [
+//   { totalUsers: 4, title: 'Administrator', avatars: ['1.png', '2.png', '3.png', '4.png'] },
+//   { totalUsers: 7, title: 'Manager', avatars: ['5.png', '6.png', '7.png', '8.png', '1.png', '2.png', '3.png'] },
+//   { totalUsers: 5, title: 'Users', avatars: ['4.png', '5.png', '6.png', '7.png', '8.png'] },
+//   { totalUsers: 3, title: 'Support', avatars: ['1.png', '2.png', '3.png'] },
+//   { totalUsers: 2, title: 'Restricted User', avatars: ['4.png', '5.png'] }
+// ]
 
 const RolesCards = () => {
   // ** States
@@ -61,11 +51,27 @@ const RolesCards = () => {
   const [dialogTitle, setDialogTitle] = useState('Add')
   const [selectedCheckbox, setSelectedCheckbox] = useState([])
   const [isIndeterminateCheckbox, setIsIndeterminateCheckbox] = useState(false)
-  const handleClickOpen = () => setOpen(true)
+  const [roleName, setRoleName] = useState('')
+  const [modules, setModules] = useState([])
+  const [rolesArr, setRolesArr] = useState([])
+  const [updateId, setUpdateId] = useState(null)
+  const [cardData, setCardData] = useState([])
+
+  const handleClickOpen = (item = undefined) => {
+    console.log(item)
+    if (item !== undefined) {
+      setRoleName(item.title)
+      console.log()
+      setSelectedCheckbox(JSON.parse(item.permissions))
+    }
+    setOpen(true)
+  }
 
   const handleClose = () => {
+    setUpdateId(null)
     setOpen(false)
     setSelectedCheckbox([])
+    setRoleName('')
     setIsIndeterminateCheckbox(false)
   }
 
@@ -86,14 +92,69 @@ const RolesCards = () => {
     } else {
       rolesArr.forEach(row => {
         const id = row.toLowerCase().split(' ').join('-')
-        togglePermission(`${id}-read`)
-        togglePermission(`${id}-write`)
-        togglePermission(`${id}-create`)
+        console.log(row)
+        if (modules[row].permissions.includes('read')) {
+          togglePermission(`${id}-read`)
+        }
+        if (modules[row].permissions.includes('write')) {
+          togglePermission(`${id}-write`)
+        }
+        if (modules[row].permissions.includes('update')) {
+          togglePermission(`${id}-update`)
+        }
+        if (modules[row].permissions.includes('delete')) {
+          togglePermission(`${id}-delete`)
+        }
       })
     }
   }
+
+  const handleModuleSubmit = () => {
+    console.log('selectedCheckbox', selectedCheckbox)
+    console.log('roleName', roleName)
+    console.log('id', updateId)
+    if (updateId === null) {
+      return axios.post('/api/role/create', { roleName, permissions: selectedCheckbox }).then(res => {
+        setroles()
+
+        if (res.data.error) {
+          return toast.error(res.data.message)
+        }
+        toast.success(res.data.message)
+
+        return handleClose()
+      })
+    }
+
+    return axios.post('/api/role/update', { id: updateId.id, roleName, permissions: selectedCheckbox }).then(res => {
+      setroles()
+
+      if (res.data.error) {
+        return toast.error(res.data.message)
+      }
+      toast.success(res.data.message)
+
+      return handleClose()
+    })
+  }
+
+  const setroles = () => {
+    axios.post('/api/role/listing').then(res => {
+      setCardData(res.data.data.cardData)
+    })
+  }
   useEffect(() => {
-    if (selectedCheckbox.length > 0 && selectedCheckbox.length < rolesArr.length * 3) {
+    setroles()
+    axios.post('/api/admin/modules').then(res => {
+      setModules(res.data)
+      setRolesArr(
+        Object.keys(res.data).map(val => {
+          return val
+        })
+      )
+    })
+
+    if (selectedCheckbox.length > 0 && selectedCheckbox.length < rolesArr.length * 4) {
       setIsIndeterminateCheckbox(true)
     } else {
       setIsIndeterminateCheckbox(false)
@@ -130,7 +191,8 @@ const RolesCards = () => {
                   sx={{ color: 'primary.main', textDecoration: 'none' }}
                   onClick={e => {
                     e.preventDefault()
-                    handleClickOpen()
+                    setUpdateId(item)
+                    handleClickOpen(cardData[index])
                     setDialogTitle('Edit')
                   }}
                 >
@@ -148,7 +210,6 @@ const RolesCards = () => {
 
   return (
     <Grid container spacing={6} className='match-height'>
-      {renderCards()}
       <Grid item xs={12} sm={6} lg={4}>
         <Card
           sx={{ cursor: 'pointer' }}
@@ -191,6 +252,7 @@ const RolesCards = () => {
           </Grid>
         </Card>
       </Grid>
+      {renderCards()}
       <Dialog fullWidth maxWidth='md' scroll='body' onClose={handleClose} open={open}>
         <DialogTitle
           component='div'
@@ -211,7 +273,13 @@ const RolesCards = () => {
         >
           <Box sx={{ my: 4 }}>
             <FormControl fullWidth>
-              <CustomTextField fullWidth label='Role Name' placeholder='Enter Role Name' />
+              <CustomTextField
+                onChange={e => setRoleName(e.target.value)}
+                value={roleName}
+                fullWidth
+                label='Role Name'
+                placeholder='Enter Role Name'
+              />
             </FormControl>
           </Box>
           <Typography variant='h4'>Role Permissions</Typography>
@@ -248,7 +316,7 @@ const RolesCards = () => {
                           size='small'
                           onChange={handleSelectAllCheckbox}
                           indeterminate={isIndeterminateCheckbox}
-                          checked={selectedCheckbox.length === rolesArr.length * 3}
+                          checked={selectedCheckbox.length === rolesArr.length * 4}
                         />
                       }
                     />
@@ -268,49 +336,87 @@ const RolesCards = () => {
                           fontSize: theme => theme.typography.h6.fontSize
                         }}
                       >
-                        {i}
+                        {modules[i].title}
                       </TableCell>
                       <TableCell>
-                        <FormControlLabel
-                          label='Read'
-                          sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
-                          control={
-                            <Checkbox
-                              size='small'
-                              id={`${id}-read`}
-                              onChange={() => togglePermission(`${id}-read`)}
-                              checked={selectedCheckbox.includes(`${id}-read`)}
-                            />
-                          }
-                        />
+                        {modules[i].permissions.includes('read') ? (
+                          <>
+                            <FormControlLabel
+                              label='Read'
+                              sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
+                              control={
+                                <Checkbox
+                                  size='small'
+                                  id={`${id}-read`}
+                                  onChange={() => togglePermission(`${id}-read`)}
+                                  checked={selectedCheckbox.includes(`${id}-read`)}
+                                />
+                              }
+                            />{' '}
+                          </>
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell>
-                        <FormControlLabel
-                          label='Write'
-                          sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
-                          control={
-                            <Checkbox
-                              size='small'
-                              id={`${id}-write`}
-                              onChange={() => togglePermission(`${id}-write`)}
-                              checked={selectedCheckbox.includes(`${id}-write`)}
+                        {modules[i].permissions.includes('write') ? (
+                          <>
+                            <FormControlLabel
+                              label='Write'
+                              sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
+                              control={
+                                <Checkbox
+                                  size='small'
+                                  id={`${id}-write`}
+                                  onChange={() => togglePermission(`${id}-write`)}
+                                  checked={selectedCheckbox.includes(`${id}-write`)}
+                                />
+                              }
                             />
-                          }
-                        />
+                          </>
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell>
-                        <FormControlLabel
-                          label='Create'
-                          sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
-                          control={
-                            <Checkbox
-                              size='small'
-                              id={`${id}-create`}
-                              onChange={() => togglePermission(`${id}-create`)}
-                              checked={selectedCheckbox.includes(`${id}-create`)}
+                        {modules[i].permissions.includes('update') ? (
+                          <>
+                            <FormControlLabel
+                              label='Update'
+                              sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
+                              control={
+                                <Checkbox
+                                  size='small'
+                                  id={`${id}-update`}
+                                  onChange={() => togglePermission(`${id}-update`)}
+                                  checked={selectedCheckbox.includes(`${id}-update`)}
+                                />
+                              }
                             />
-                          }
-                        />
+                          </>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {modules[i].permissions.includes('delete') ? (
+                          <>
+                            <FormControlLabel
+                              label='Delete'
+                              sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
+                              control={
+                                <Checkbox
+                                  size='small'
+                                  id={`${id}-delete`}
+                                  onChange={() => togglePermission(`${id}-delete`)}
+                                  checked={selectedCheckbox.includes(`${id}-delete`)}
+                                />
+                              }
+                            />
+                          </>
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                     </TableRow>
                   )
@@ -328,7 +434,7 @@ const RolesCards = () => {
           }}
         >
           <Box className='demo-space-x'>
-            <Button type='submit' variant='contained' onClick={handleClose}>
+            <Button type='submit' variant='contained' onClick={handleModuleSubmit}>
               Submit
             </Button>
             <Button color='secondary' variant='tonal' onClick={handleClose}>

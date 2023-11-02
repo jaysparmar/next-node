@@ -1,25 +1,26 @@
 const knex = require('../config/mysql_db.js')
-const model = require('../model/role.js')
 
 const updateRole = async (req, res) => {
   try {
-    if (!req.validate('roles', 'update')) {
-      return false
-    }
-    const { role_name, permissions, id } = req.body
+    // if (!req.validate('roles', 'update')) {
+    //   return false
+    // }
+    const { roleName, permissions, id } = req.body
 
     const data = {
-      role_name,
-      permissions
+      name: roleName,
+      permissions: JSON.stringify(permissions)
     }
-    const update = await model.updateRole(id, data)
+    const update = await knex('roles').update(data).where({ id })
     if (update) {
       res.json({
         error: false,
-        message: 'Role has been updated'
+        message: 'Role has been updated',
+        data: update
       })
     }
   } catch (error) {
+    console.log(error)
     res.json({
       error: true,
       message: 'something want wrong',
@@ -31,73 +32,53 @@ const updateRole = async (req, res) => {
 }
 
 const createRole = async (req, res) => {
-  try {
-    if (!req.validate('roles', 'create')) {
-      return false
-    }
-    const { role_name, permissions } = req.body
+  // try {
+  // if (!req.validate('roles', 'create')) {
+  //   return false
+  // }
+  const { roleName, permissions } = req.body
 
-    const data = {
-      role_name,
-      permissions
-    }
-    const id = await model.insertRole(data)
-
-    if (id) {
-      res.status(200).json({
-        error: false,
-        message: 'Role has been created',
-        data: id
-      })
-    }
-  } catch (e) {
-    console.log(e)
-    res.json({ error: true, message: 'Something went wrong', data: e })
+  const data = {
+    name: roleName,
+    permissions: JSON.stringify(permissions)
   }
+  const id = await knex('roles').insert(data)
+  if (id) {
+    res.status(200).json({
+      error: false,
+      message: 'Role has been created',
+      data: id
+    })
+  }
+
+  // } catch (e) {
+  //   console.log(e)
+  //   res.json({ error: true, message: 'Something went wrong', data: e })
+  // }
   res.end()
 }
 
 const paginateRole = async (req, res) => {
   try {
-    if (!req.validate('roles', 'read')) {
-      return false
-    }
-    let { offset = 0, limit = 10, order = 'asc', sort = 'id', search, status } = req.body
+    const data = await knex('roles')
 
-    let searchFrom = ['role_name', 'role_key']
-    const total = await model.paginatRoleTotal(searchFrom, search, status)
+    const cardData = data.map(val => {
+      val.totalUsers = 6
+      val.title = val.name
+      val.avatars = ['5.png', '6.png', '7.png', '8.png', '1.png', '2.png', '3.png']
 
-    const rows = await model.paginatRole(limit, offset, searchFrom, status, sort, search, order)
-
-    // rows = rows.map(row => {
-    //     row.image = constants.getStaticUrl(row.image)
-    //     return row
-    // })
-    let data_rows = []
-    if (order === 'asc') {
-      let sr = offset + 1
-      await rows.forEach(row => {
-        row.sr = sr
-        data_rows.push(row)
-        sr++
-      })
-    } else {
-      let sr = total.total - limit * offset
-      await rows.forEach(row => {
-        row.sr = sr
-        data_rows.push(row)
-        sr--
-      })
-    }
-    res.status(200).json({
-      error: false,
-      message: 'Role received successfully.',
-      data: {
-        rows: data_rows,
-        total
-      }
+      return val
     })
-    res.end()
+
+    return res
+      .json({
+        error: false,
+        message: 'Received successfully.',
+        data: {
+          cardData
+        }
+      })
+      .end()
   } catch (e) {
     console.log(e)
     res.json({ error: true, message: 'Something went wrong', data: e })

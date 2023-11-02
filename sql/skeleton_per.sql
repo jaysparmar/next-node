@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2023 at 03:44 PM
+-- Generation Time: Nov 02, 2023 at 02:34 PM
 -- Server version: 10.4.6-MariaDB
 -- PHP Version: 8.1.6
 
@@ -50,77 +50,6 @@ INSERT INTO `admins` (`id`, `firstname`, `lastname`, `email`, `password`, `statu
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admin_roles`
---
-
-CREATE TABLE `admin_roles` (
-  `id` int(11) NOT NULL,
-  `role_name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `admin_roles`
---
-
-INSERT INTO `admin_roles` (`id`, `role_name`) VALUES
-(1, 'admin'),
-(2, 'HR');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `admin_roles_permissions`
---
-
-CREATE TABLE `admin_roles_permissions` (
-  `id` int(11) NOT NULL,
-  `role_id` int(11) NOT NULL,
-  `module_id` int(11) NOT NULL,
-  `readP` enum('0','1') NOT NULL DEFAULT '0',
-  `createP` enum('0','1') NOT NULL DEFAULT '0',
-  `updateP` enum('0','1') NOT NULL DEFAULT '0',
-  `deleteP` enum('0','1') NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `admin_roles_permissions`
---
-
-INSERT INTO `admin_roles_permissions` (`id`, `role_id`, `module_id`, `readP`, `createP`, `updateP`, `deleteP`) VALUES
-(909, 1, 1, '1', '1', '1', '1'),
-(910, 1, 2, '1', '1', '1', '1'),
-(911, 1, 3, '1', '1', '1', '1'),
-(912, 1, 4, '1', '1', '1', '1'),
-(925, 2, 1, '1', '1', '1', '1'),
-(926, 2, 2, '1', '0', '0', '0'),
-(927, 2, 3, '0', '0', '0', '0'),
-(928, 2, 4, '0', '0', '0', '0');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `location`
---
-
-CREATE TABLE `location` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `image` text DEFAULT NULL,
-  `status` enum('1','2') NOT NULL DEFAULT '1' COMMENT '1 = active, 2 = delete'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `location`
---
-
-INSERT INTO `location` (`id`, `name`, `image`, `status`) VALUES
-(7, 'Y111', '88528mare_orientale_nov_27_2021_tglenn_fullsize_jpg.jpg', '1'),
-(8, 'N1', NULL, '1'),
-(9, 'Asa', NULL, '1');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `messages`
 --
 
@@ -150,24 +79,21 @@ INSERT INTO `messages` (`id`, `wp_id`, `reply_id`, `wp_from`, `wp_to`, `type`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `modules`
+-- Table structure for table `roles`
 --
 
-CREATE TABLE `modules` (
+CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
-  `module_key` varchar(255) NOT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1' COMMENT '0 - INACTIVE, 1 - ACTIVE\r\n'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `name` varchar(255) NOT NULL,
+  `permissions` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `modules`
+-- Dumping data for table `roles`
 --
 
-INSERT INTO `modules` (`id`, `module_key`, `status`) VALUES
-(1, 'dashboards', '1'),
-(2, 'products', '1'),
-(3, 'admin', '1'),
-(4, 'roles', '1');
+INSERT INTO `roles` (`id`, `name`, `permissions`) VALUES
+(12, 'Admin', '[\"admin-read\"]');
 
 -- --------------------------------------------------------
 
@@ -193,24 +119,6 @@ ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `admin_roles`
---
-ALTER TABLE `admin_roles`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `admin_roles_permissions`
---
-ALTER TABLE `admin_roles_permissions`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `location`
---
-ALTER TABLE `location`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `messages`
 --
 ALTER TABLE `messages`
@@ -218,9 +126,9 @@ ALTER TABLE `messages`
   ADD KEY `wp_id` (`wp_id`,`reply_id`,`wp_from`,`wp_to`);
 
 --
--- Indexes for table `modules`
+-- Indexes for table `roles`
 --
-ALTER TABLE `modules`
+ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -240,34 +148,16 @@ ALTER TABLE `admins`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
 
 --
--- AUTO_INCREMENT for table `admin_roles`
---
-ALTER TABLE `admin_roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
-
---
--- AUTO_INCREMENT for table `admin_roles_permissions`
---
-ALTER TABLE `admin_roles_permissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=929;
-
---
--- AUTO_INCREMENT for table `location`
---
-ALTER TABLE `location`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT for table `modules`
+-- AUTO_INCREMENT for table `roles`
 --
-ALTER TABLE `modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+ALTER TABLE `roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
