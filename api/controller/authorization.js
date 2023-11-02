@@ -16,33 +16,6 @@ const login = async (req, res) => {
   let userData = await model.getAdminDetails(creds)
   if (userData.length) {
     const { status } = userData[0]
-
-    // let data = await knex('admin_roles as ar')
-    //   .leftJoin('admin_roles_permissions as rp', 'ar.id', 'rp.role_id')
-    //   .leftJoin('modules as m', 'm.id', 'rp.module_id')
-    //   .where('ar.id', '=', userData[0].role)
-    //   .select(
-    //     'm.module_key',
-    //     'rp.createP as create',
-    //     'rp.updateP as update',
-    //     'rp.deleteP as delete',
-    //     'rp.readP as read'
-    //   )
-
-    // userData[0].permissions = data.map(val => {
-    //   Object.keys(val).map(data => {
-    //     if (data != 'module_key') {
-    //       if (val[data] == '1') {
-    //         val[data] = true
-    //       } else {
-    //         val[data] = false
-    //       }
-    //     }
-    //   })
-
-    //   return val
-    // })
-
     delete userData[0].password
 
     if (status === '1') {
@@ -52,7 +25,7 @@ const login = async (req, res) => {
       const accessToken = jwt.sign(
         {
           id: userData[0].id,
-          role: userData[0].role,
+          role_id: userData[0].role,
           email: userData[0].email
         },
         jwtConfig.secret,
@@ -62,7 +35,7 @@ const login = async (req, res) => {
       const refreshToken = jwt.sign(
         {
           id: userData[0].id,
-          role: userData[0].role,
+          role_id: userData[0].role,
           email: userData[0].email
         },
         jwtConfig.refreshTokenSecret,

@@ -28,7 +28,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import TableContainer from '@mui/material/TableContainer'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import axios from 'axios'
+import api from 'src/interceptors/api'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -36,14 +36,6 @@ import Icon from 'src/@core/components/icon'
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
 import toast from 'react-hot-toast'
-
-// const cardData = [
-//   { totalUsers: 4, title: 'Administrator', avatars: ['1.png', '2.png', '3.png', '4.png'] },
-//   { totalUsers: 7, title: 'Manager', avatars: ['5.png', '6.png', '7.png', '8.png', '1.png', '2.png', '3.png'] },
-//   { totalUsers: 5, title: 'Users', avatars: ['4.png', '5.png', '6.png', '7.png', '8.png'] },
-//   { totalUsers: 3, title: 'Support', avatars: ['1.png', '2.png', '3.png'] },
-//   { totalUsers: 2, title: 'Restricted User', avatars: ['4.png', '5.png'] }
-// ]
 
 const RolesCards = () => {
   // ** States
@@ -114,7 +106,7 @@ const RolesCards = () => {
     console.log('roleName', roleName)
     console.log('id', updateId)
     if (updateId === null) {
-      return axios.post('/api/role/create', { roleName, permissions: selectedCheckbox }).then(res => {
+      return api.post('/api/role/create', { roleName, permissions: selectedCheckbox }).then(res => {
         setroles()
 
         if (res.data.error) {
@@ -126,7 +118,7 @@ const RolesCards = () => {
       })
     }
 
-    return axios.post('/api/role/update', { id: updateId.id, roleName, permissions: selectedCheckbox }).then(res => {
+    return api.post('/api/role/update', { id: updateId.id, roleName, permissions: selectedCheckbox }).then(res => {
       setroles()
 
       if (res.data.error) {
@@ -139,13 +131,13 @@ const RolesCards = () => {
   }
 
   const setroles = () => {
-    axios.post('/api/role/listing').then(res => {
+    api.post('/api/role/listing').then(res => {
       setCardData(res.data.data.cardData)
     })
   }
   useEffect(() => {
     setroles()
-    axios.post('/api/admin/modules').then(res => {
+    api.post('/api/admin/modules').then(res => {
       setModules(res.data)
       setRolesArr(
         Object.keys(res.data).map(val => {

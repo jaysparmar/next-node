@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
 import PageHeader from 'src/@core/components/page-header'
-import TableServerSide from 'src/views/users/Table'
+import TableServerSide from 'src/views/admins/Table'
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   textDecoration: 'none',

@@ -65,6 +65,9 @@ const createAdminUser = async (req, res) => {
 
 const paginateAdmin = async (req, res) => {
   try {
+    if (!req.validate('admin-read')) {
+      return false
+    }
     let { offset = 0, limit = 10, order = 'asc', sort = 'id', search, status } = req.body
 
     let searchFrom = ['firstname', 'lastname', 'email']
@@ -72,10 +75,6 @@ const paginateAdmin = async (req, res) => {
 
     const rows = await model.paginateAdmin(limit, offset, searchFrom, status, sort, search, order)
 
-    // rows = rows.map(row => {
-    //     row.image = constants.getStaticUrl(row.image)
-    //     return row
-    // })
     let data_rows = []
     if (order === 'asc') {
       let sr = total.total - limit * offset
@@ -187,7 +186,7 @@ const deleteAdmin = async (req, res) => {
   } catch (error) {
     res.json({
       error: true,
-      message: 'something want wrong',
+      message: 'something went wrong',
       data: error
     })
   }
@@ -195,104 +194,10 @@ const deleteAdmin = async (req, res) => {
   return res.end()
 }
 
-const rolesListing = async (req, res) => {
-  const { limit, offset, search, order, sort, status } = req.body
-  const rows = await RoleModel.paginatRole(limit, offset, ['role_name'], status, sort, search, order)
-  const total = await RoleModel.paginatRoleTotal(['role_name'], search, status)
-
-  let data_rows = []
-  if (order === 'asc') {
-    let sr = total.total - limit * offset
-    await rows.forEach(row => {
-      row.sr = sr
-      data_rows.push(row)
-      sr--
-    })
-  } else {
-    let sr = offset + 1
-    await rows.forEach(row => {
-      row.sr = sr
-      data_rows.push(row)
-      sr++
-    })
-  }
-
-  res.json({
-    error: false,
-    message: 'Data received successfully',
-    data: {
-      rows: data_rows,
-      total: total.total
-    }
-  })
-}
-
 const modulesListing = async (req, res) => {
-  // try {
-  // if (!req.validate('admin', 'read')) {
-  //   return false
-  // }
-
   const modules = require('../config/modules.js')
 
   return res.json(modules)
-
-  // const { role_id = -1 } = req.body
-
-  // let data = await knex('admin_roles as ar')
-  //   .leftJoin('admin_roles_permissions as rp', 'ar.id', 'rp.role_id')
-  //   .leftJoin('modules as m', 'm.id', 'rp.module_id')
-  //   .where('ar.id', '=', role_id)
-  //   .select(
-  //     'm.module_key',
-  //     'rp.createP as create',
-  //     'rp.updateP as update',
-  //     'rp.deleteP as delete',
-  //     'rp.readP as read',
-  //     'ar.role_name'
-  //   )
-  // let role_name = ''
-  // if (data.length && data.length != 0) {
-  //   role_name = data[0].role_name
-  // }
-
-  // let permissions = data.map(val => {
-  //   delete val.role_name
-  //   Object.keys(val).map(data => {
-  //     if (data != 'module_key') {
-  //       if (val[data] == '1') {
-  //         val[data] = true
-  //       } else {
-  //         val[data] = false
-  //       }
-  //     }
-  //   })
-
-  //   return val
-  // })
-  // const modules = await knex('modules')
-  // res.json({
-  //   error: false,
-  //   message: 'Modules recieved successfully',
-  //   data: {
-  //     modules,
-  //     permissions,
-  //     role_name
-  //   }
-  // })
-
-  return res.end()
-
-  // } catch (err) {
-  //     res.json({
-  //         error: false,
-  //         message: "Something went Wrong",
-  //         data: {
-  //             err
-  //         }
-  //     })
-  //     return res.end()
-  // }
 }
 
 module.exports = {
@@ -300,6 +205,5 @@ module.exports = {
   paginateAdmin,
   updateAdmin,
   deleteAdmin,
-  rolesListing,
   modulesListing
 }

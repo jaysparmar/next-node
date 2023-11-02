@@ -6,9 +6,10 @@ import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 import { DataGrid } from '@mui/x-data-grid'
+import toast from 'react-hot-toast'
+import api from 'src/interceptors/api'
 
 // ** ThirdParty Components
-import axios from 'axios'
 
 // ** Custom Components
 import CustomAvatar from 'src/@core/components/mui/avatar'
@@ -95,7 +96,7 @@ const UsersTable = () => {
 
   const fetchTableData = useCallback(
     async (sort, q, column) => {
-      await axios
+      await api
         .post('/api/admin/listing', {
           search: q,
           order: sort,
@@ -104,6 +105,9 @@ const UsersTable = () => {
           offset: Math.round(Math.round(paginationModel.page) * paginationModel.pageSize)
         })
         .then(res => {
+          if (res.data.error) {
+            return toast.error(res.data.message)
+          }
           setTotal(res.data.data.total.total)
           setRows(res.data.data.rows)
         })

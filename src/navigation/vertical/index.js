@@ -21,9 +21,9 @@ const navigation = () => {
       ]
     },
     {
-      title: 'Users',
+      title: 'admin',
       icon: 'mdi:users',
-      path: '/users'
+      path: '/admins'
     },
     {
       sectionTitle: 'Apps & Pages'
@@ -351,7 +351,6 @@ const navigation = () => {
       icon: 'tabler:brand-tabler'
     },
     {
-      
       title: 'Cards',
       icon: 'tabler:id',
       children: [
@@ -462,7 +461,7 @@ const navigation = () => {
         {
           title: 'More',
           path: '/components/more'
-        },
+        }
       ]
     },
     {
@@ -523,7 +522,7 @@ const navigation = () => {
         {
           title: 'Input Mask',
           path: '/forms/form-elements/input-mask'
-        },
+        }
       ]
     },
     {

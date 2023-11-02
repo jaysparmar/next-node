@@ -10,5 +10,9 @@ module.exports = {
   settings: {
     title: 'Settings',
     permissions: ['write', 'update', 'read']
+  },
+  x: {
+    title: 'X module',
+    permissions: ['write', 'update', 'read', 'delete']
   }
 }

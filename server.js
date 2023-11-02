@@ -36,7 +36,7 @@ nextApp.prepare().then(() => {
 
   app.use(`${sub_uri}/authorization`, authorization)
   app.use(`${sub_uri}/role`, verifyToken.verifyToken, role)
-  app.use(`${sub_uri}/admin`, admin)
+  app.use(`${sub_uri}/admin`, verifyToken.verifyToken, admin)
   app.use(`${sub_uri}/location`, verifyToken.verifyToken, location)
   app.post('/auth/me', authMe)
   app.get('/app-bar/search/', (req, res) => {
