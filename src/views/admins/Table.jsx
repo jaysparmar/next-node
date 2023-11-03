@@ -8,6 +8,7 @@ import CardHeader from '@mui/material/CardHeader'
 import { DataGrid } from '@mui/x-data-grid'
 import toast from 'react-hot-toast'
 import api from 'src/interceptors/api'
+import { Button } from '@mui/material'
 
 // ** ThirdParty Components
 
@@ -17,6 +18,16 @@ import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbar'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
+
+const PageConfig = {
+  listingUrl: `/api/admin/listing`,
+  editUrl: '',
+  deleteUrl: '',
+  module: '',
+  pageTitle: '',
+  createText: '',
+  editText: ''
+}
 
 // ** renders client column
 const renderClient = params => {
@@ -68,18 +79,6 @@ const columns = [
       </Typography>
     )
   }
-
-  // {
-  //   flex: 0.125,
-  //   field: 'age',
-  //   minWidth: 80,
-  //   headerName: 'Age',
-  //   renderCell: params => (
-  //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
-  //       {params.row.age}
-  //     </Typography>
-  //   )
-  // }
 ]
 
 const UsersTable = () => {
@@ -90,14 +89,11 @@ const UsersTable = () => {
   const [searchValue, setSearchValue] = useState('')
   const [sortColumn, setSortColumn] = useState('id')
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
-  function loadServerRows(currentPage, data) {
-    return data.slice(currentPage * paginationModel.pageSize, (currentPage + 1) * paginationModel.pageSize)
-  }
 
   const fetchTableData = useCallback(
     async (sort, q, column) => {
       await api
-        .post('/api/admin/listing', {
+        .post(PageConfig.listingUrl, {
           search: q,
           order: sort,
           sort: column,
@@ -137,7 +133,14 @@ const UsersTable = () => {
 
   return (
     <Card>
-      <CardHeader title='Server Side' />
+      <CardHeader
+        title='Server Side'
+        action={
+          <>
+            <Button>Create</Button>
+          </>
+        }
+      />
       <DataGrid
         autoHeight
         pagination

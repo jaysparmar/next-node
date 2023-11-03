@@ -48,6 +48,7 @@ import CardWrapper from 'src/@core/styles/libs/react-credit-cards'
 
 // ** Styles Import
 import 'react-credit-cards/es/styles-compiled.css'
+import themeConfig from 'src/configs/themeConfig'
 
 // ** Styled <sup> component
 const Sup = styled('sup')(({ theme }) => ({
@@ -527,7 +528,7 @@ const UserViewBilling = () => {
                           <Typography sx={{ fontWeight: 500 }}>Company Name:</Typography>
                         </TableCell>
                         <TableCell>
-                          <Typography sx={{ color: 'text.secondary' }}>Pixinvent</Typography>
+                          <Typography sx={{ color: 'text.secondary' }}>{themeConfig.templateName}</Typography>
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -656,7 +657,12 @@ const UserViewBilling = () => {
               <form>
                 <Grid container spacing={6}>
                   <Grid item xs={12} sm={6}>
-                    <CustomTextField fullWidth defaultValue='Pixinvent' label='Company Name' placeholder='pixinvent' />
+                    <CustomTextField
+                      fullWidth
+                      defaultValue={themeConfig.templateName}
+                      label='Company Name'
+                      placeholder={themeConfig.templateName}
+                    />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <CustomTextField

@@ -4,6 +4,7 @@ const api = axios.create()
 
 api.interceptors.request.use(
   config => {
+    config.url = `http://localhost:8000${config.url}`
     const token = localStorage.getItem('accessToken') // Replace 'YOUR_BEARER_TOKEN_HERE' with your actual token
 
     if (token) {

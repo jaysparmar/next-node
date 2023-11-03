@@ -15,6 +15,7 @@ import { useForm, Controller } from 'react-hook-form'
 
 // ** Styles Import
 import 'react-credit-cards/es/styles-compiled.css'
+import themeConfig from 'src/configs/themeConfig'
 
 const defaultValues = {
   companyName: '',
@@ -50,7 +51,7 @@ const BillingAddressCard = () => {
                     value={value}
                     onChange={onChange}
                     label='Company Name'
-                    placeholder='Pixinvent'
+                    placeholder={themeConfig.templateName}
                     error={Boolean(errors.companyName)}
                     {...(errors.companyName && { helperText: 'This field is required' })}
                   />

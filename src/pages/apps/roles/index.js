@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography'
 import PageHeader from 'src/@core/components/page-header'
 
 // ** Demo Components Imports
-import Table from 'src/views/apps/roles/Table'
 import RoleCards from 'src/views/apps/roles/RoleCards'
 
 const RolesComponent = () => {

@@ -277,7 +277,7 @@ const DialogShareProject = () => {
           >
             <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 2 } }}>
               <Icon icon='tabler:users' />
-              <Typography variant='h6'>{`Public to ${themeConfig.templateName} - Pixinvent`}</Typography>
+              <Typography variant='h6'>{`Public to ${themeConfig.templateName}`}</Typography>
             </Box>
             <Button variant='contained'>Copy Project Link</Button>
           </Box>

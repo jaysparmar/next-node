@@ -4,11 +4,9 @@ import { createContext, useEffect, useState } from 'react'
 // ** Next Import
 import { useRouter } from 'next/router'
 
-// ** Axios
-import axios from 'axios'
-
 // ** Config
 import authConfig from 'src/configs/auth'
+import api from 'src/interceptors/api'
 
 // ** Defaults
 const defaultProvider = {
@@ -33,7 +31,7 @@ const AuthProvider = ({ children }) => {
       const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)
       if (storedToken) {
         setLoading(true)
-        await axios
+        await api
           .post(
             authConfig.meEndpoint,
             {},
@@ -66,7 +64,7 @@ const AuthProvider = ({ children }) => {
   }, [])
 
   const handleLogin = (params, errorCallback) => {
-    axios
+    api
       .post(authConfig.loginEndpoint, params)
       .then(async response => {
         params.rememberMe

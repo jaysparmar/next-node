@@ -14,7 +14,7 @@ const users = [
     password: 'admin',
     fullName: 'John Doe',
     username: 'johndoe',
-    email: 'admin@vuexy.com'
+    email: 'admin@admin.com'
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ const users = [
     password: 'client',
     fullName: 'Jane Doe',
     username: 'janedoe',
-    email: 'client@vuexy.com'
+    email: 'client@admin.com'
   }
 ]
 

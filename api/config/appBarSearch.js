@@ -1,7 +1,7 @@
 const searchData = [
   {
     id: 1,
-    url: '/dashboards/analytics',
+    url: '/dashboard',
     icon: 'tabler:chart-pie-2',
     title: 'Analytics Dashboard',
     category: 'dashboards'

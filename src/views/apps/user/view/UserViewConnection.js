@@ -56,13 +56,13 @@ const socialAccountsArr = [
   {
     title: 'Twitter',
     isConnected: true,
-    username: '@Pixinvent',
+    username: '{/* LATER_CONFIG */}',
     logo: '/images/logos/twitter.png'
   },
   {
     title: 'Instagram',
     isConnected: true,
-    username: '@Pixinvent',
+    username: '{/* LATER_CONFIG */}',
     logo: '/images/logos/instagram.png'
   },
   {

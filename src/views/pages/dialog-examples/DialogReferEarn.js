@@ -115,7 +115,7 @@ const DialogReferEarn = () => {
               Refer & Earn
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}>
-              Invite your friend to vuexy, if thay sign up, you and your friend will get 30 days free trial
+              Invite your friend to Eparmar, if thay sign up, you and your friend will get 30 days free trial
             </Typography>
           </Box>
           <Grid container spacing={6} sx={{ mt: 4, textAlign: 'center' }}>

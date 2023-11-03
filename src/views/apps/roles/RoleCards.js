@@ -48,6 +48,7 @@ const RolesCards = () => {
   const [rolesArr, setRolesArr] = useState([])
   const [updateId, setUpdateId] = useState(null)
   const [cardData, setCardData] = useState([])
+  const [totalModules, setTotalModules] = useState(0)
 
   const handleClickOpen = (item = undefined) => {
     console.log(item)
@@ -136,22 +137,27 @@ const RolesCards = () => {
     })
   }
   useEffect(() => {
-    setroles()
-    api.post('/api/admin/modules').then(res => {
-      setModules(res.data)
-      setRolesArr(
-        Object.keys(res.data).map(val => {
-          return val
-        })
-      )
-    })
-
-    if (selectedCheckbox.length > 0 && selectedCheckbox.length < rolesArr.length * 4) {
+    if (selectedCheckbox.length > 0 && selectedCheckbox.length < totalModules) {
       setIsIndeterminateCheckbox(true)
     } else {
       setIsIndeterminateCheckbox(false)
     }
   }, [selectedCheckbox])
+  useEffect(() => {
+    setroles()
+    api.post('/api/admin/modules').then(res => {
+      let total = 0
+      setModules(res.data)
+      setRolesArr(
+        Object.keys(res.data).map(val => {
+          total += res.data[val].permissions.length
+
+          return val
+        })
+      )
+      setTotalModules(total)
+    })
+  }, [])
 
   const renderCards = () =>
     cardData.map((item, index) => (
@@ -308,7 +314,7 @@ const RolesCards = () => {
                           size='small'
                           onChange={handleSelectAllCheckbox}
                           indeterminate={isIndeterminateCheckbox}
-                          checked={selectedCheckbox.length === rolesArr.length * 4}
+                          checked={selectedCheckbox.length === totalModules}
                         />
                       }
                     />

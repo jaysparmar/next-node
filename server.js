@@ -1,6 +1,7 @@
 // server.js
 const express = require('express')
 const next = require('next')
+require('dotenv').config()
 
 const fileUpload = require('express-fileupload')
 const path = require('path')
@@ -15,14 +16,16 @@ const constants = require('./api/helpers/constants.js')
 const webhook = require('./api/controller/webhook.js')
 const { authMe } = require('./api/controller/authorization.js')
 
-const port = 3000
+const mode = process.env.NEXT_PUBLIC_MODE // dev, production
+const port = mode === 'production' ? 3000 : process.env.NEXT_PUBLIC_DEV_SERVER_PORT
 const sub_uri = constants.SUB_URI
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = 'localhost'
-const nextApp = next({ dev, port, hostname })
-const handle = nextApp.getRequestHandler()
-nextApp.prepare().then(() => {
+let nextApp
+let handle
+
+const createApp = () => {
   const app = express()
 
   // Define your Express middleware and routes here
@@ -103,12 +106,24 @@ nextApp.prepare().then(() => {
   })
 
   // For all other routes, let Next.js handle them
-  app.get('*', (req, res) => {
-    return handle(req, res)
-  })
+  if (mode === 'production') {
+    app.get('*', (req, res) => {
+      return handle(req, res)
+    })
+  }
 
   app.listen(port, err => {
     if (err) throw err
-    console.log('> Ready on http://localhost:3000')
+    console.log('> Ready on http://localhost:' + port)
   })
-})
+}
+
+if (mode == 'production') {
+  nextApp = next({ dev, port, hostname })
+  handle = nextApp.getRequestHandler()
+  nextApp.prepare().then(() => {
+    createApp()
+  })
+} else {
+  createApp()
+}

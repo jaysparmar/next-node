@@ -4,6 +4,7 @@ import { useEffect, useCallback, useRef, useState } from 'react'
 // ** Next Imports
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import api from 'src/interceptors/api'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -38,7 +39,7 @@ const defaultSuggestionsData = [
       {
         icon: 'tabler:chart-pie-2',
         suggestion: 'Analytics',
-        link: '/dashboards/analytics'
+        link: '/dashboard'
       },
       {
         icon: 'tabler:device-analytics',
@@ -341,7 +342,7 @@ const AutocompleteComponent = ({ hidden, settings }) => {
 
   // Get all data using API
   useEffect(() => {
-    axios
+    api
       .get('/app-bar/search', {
         params: { q: searchValue }
       })

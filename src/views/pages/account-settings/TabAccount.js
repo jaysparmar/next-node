@@ -29,6 +29,7 @@ import { useForm, Controller } from 'react-hook-form'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import themeConfig from 'src/configs/themeConfig'
 
 const initialData = {
   state: '',
@@ -41,7 +42,7 @@ const initialData = {
   language: 'arabic',
   timezone: 'gmt-12',
   country: 'australia',
-  organization: 'Pixinvent',
+  organization: '{/* LATER_CONFIG */}',
   email: 'john.doe@example.com'
 }
 
@@ -179,7 +180,7 @@ const TabAccount = () => {
                   <CustomTextField
                     fullWidth
                     label='Organization'
-                    placeholder='Pixinvent'
+                    placeholder={themeConfig.templateName}
                     value={formData.organization}
                     onChange={e => handleFormChange('organization', e.target.value)}
                   />

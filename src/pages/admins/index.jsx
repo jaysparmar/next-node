@@ -18,21 +18,6 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 const DataGrid = () => {
   return (
     <Grid container spacing={6}>
-      <PageHeader
-        title={
-          <Typography variant='h4'>
-            <LinkStyled href='https://mui.com/x/react-data-grid/' target='_blank'>
-              Users
-            </LinkStyled>
-          </Typography>
-        }
-        subtitle={
-          <Typography sx={{ color: 'text.secondary' }}>
-            Data Grid is a fast and extendable react data table and react data grid.
-          </Typography>
-        }
-      />
-
       <Grid item xs={12}>
         <TableServerSide />
       </Grid>
