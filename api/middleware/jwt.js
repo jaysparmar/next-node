@@ -33,6 +33,8 @@ const verifyToken = async (req, res, next) => {
     return res.end()
   }
 
+  req.successStatus = 200
+
   jwt.verify(token, jwtConfig.secret, async (err, user) => {
     if (err) {
       res.status(401).json({ error: true, message: 'Authorization failed!' })
@@ -46,6 +48,9 @@ const verifyToken = async (req, res, next) => {
       const checkToken = await knex('admins').where({ id: req.login_user.id, access_token: token })
       if (checkToken.length === 0) {
         return res.status(401).json({ error: true, message: 'Authorization failed!' }).end()
+      }
+      if (checkToken[0].permission_reset == 1) {
+        req.successStatus = 201
       }
       const roles = await knex('roles').where({ id: req.login_user.role_id })
       if (roles.length != 0) {

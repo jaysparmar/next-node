@@ -13,17 +13,21 @@ const updateRole = async (req, res) => {
     }
     const update = await knex('roles').update(data).where({ id })
     if (update) {
-      res.json({
-        error: false,
-        message: 'Role has been updated',
-        data: update
-      })
+      await knex('admins').update({ permission_reset: '1' }).where({ role_id: id })
+
+      return res
+        .json({
+          error: false,
+          message: 'Role has been updated',
+          data: update
+        })
+        .end()
     }
   } catch (error) {
     console.log(error)
     res.json({
       error: true,
-      message: 'something want wrong',
+      message: 'something went wrong',
       data: error
     })
   }
@@ -44,7 +48,7 @@ const createRole = async (req, res) => {
   }
   const id = await knex('roles').insert(data)
   if (id) {
-    res.status(200).json({
+    res.status(req.successStatus).json({
       error: false,
       message: 'Role has been created',
       data: id
@@ -71,7 +75,7 @@ const paginateRole = async (req, res) => {
     })
 
     return res
-      .status(201)
+      .status(req.successStatus)
       .json({
         error: false,
         message: 'Received successfully.',
@@ -82,7 +86,7 @@ const paginateRole = async (req, res) => {
       .end()
   } catch (e) {
     console.log(e)
-    res.status(201).json({ error: true, message: 'Something went wrong', data: e })
+    res.status(req.successStatus).json({ error: true, message: 'Something went wrong', data: e })
   }
   res.end()
 }
