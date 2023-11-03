@@ -6,6 +6,8 @@
  */
 const themeConfig = {
   // ** Layout Configs
+  backendUrl:
+    process.env.NEXT_PUBLIC_MODE === 'dev' ? 'http://localhost:' + process.env.NEXT_PUBLIC_DEV_SERVER_PORT : '',
   templateName: process.env.NEXT_PUBLIC_APP_NAME /* App Name */,
   layout: 'vertical' /* vertical | horizontal */,
   mode: 'light' /* light | dark | semi-dark /*! Note: semi-dark value will only work for Vertical Layout */,

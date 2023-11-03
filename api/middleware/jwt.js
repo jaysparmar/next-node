@@ -28,14 +28,14 @@ const verifyToken = async (req, res, next) => {
 
   let token = authHeader && authHeader.split(' ')[1]
   if (token == null) {
-    res.status(401).send({ error: true, message: 'Token not found' }) // if there isn't any token
+    res.status(401).json({ error: true, message: 'Token not found' }) // if there isn't any token
 
     return res.end()
   }
 
   jwt.verify(token, jwtConfig.secret, async (err, user) => {
     if (err) {
-      res.status(401).send({ error: true, message: 'Authorization failed!' })
+      res.status(401).json({ error: true, message: 'Authorization failed!' })
 
       return res.end()
     }
@@ -43,7 +43,10 @@ const verifyToken = async (req, res, next) => {
     if (user != undefined) {
       req.login_user = user
       req.permissions = []
-
+      const checkToken = await knex('admins').where({ id: req.login_user.id, access_token: token })
+      if (checkToken.length === 0) {
+        return res.status(401).json({ error: true, message: 'Authorization failed!' }).end()
+      }
       const roles = await knex('roles').where({ id: req.login_user.role_id })
       if (roles.length != 0) {
         req.permissions = JSON.parse(roles[0].permissions)

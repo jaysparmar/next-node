@@ -91,7 +91,7 @@ const paginateAdmin = async (req, res) => {
         sr++
       })
     }
-    res.status(200).json({
+    res.status(201).json({
       error: false,
       message: 'Admin received successfully.',
       data: {
@@ -200,10 +200,21 @@ const modulesListing = async (req, res) => {
   return res.json(modules)
 }
 
+const getPermissions = async (req, res) => {
+  console.log(req.login_user)
+  const roles = await knex('roles').where({ id: req.login_user.role_id })
+  if (roles.length === 0) {
+    return res.json([])
+  }
+
+  res.json(JSON.parse(roles[0].permissions)).end()
+}
+
 module.exports = {
   createAdminUser,
   paginateAdmin,
   updateAdmin,
   deleteAdmin,
-  modulesListing
+  modulesListing,
+  getPermissions
 }

@@ -29,8 +29,7 @@ const paginateAdmin = (limit, offset, searchFrom, status, sort, search, order) =
     `${table}.firstname`,
     `${table}.lastname`,
     `${table}.email`,
-    `${table}.status`,
-    `${table}.role`
+    `${table}.status`
   )
 
   if (status) rows.where(`${table}.status`, `${status}`)

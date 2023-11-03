@@ -16,39 +16,16 @@ const login = async (req, res) => {
   let userData = await model.getAdminDetails(creds)
   if (userData.length) {
     const { status } = userData[0]
-    delete userData[0].password
 
     if (status === '1') {
       // try {
-      const { jwtConfig } = constants
-
-      const accessToken = jwt.sign(
-        {
-          id: userData[0].id,
-          role_id: userData[0].role,
-          email: userData[0].email
-        },
-        jwtConfig.secret,
-        { expiresIn: jwtConfig.expireTime }
-      )
-
-      const refreshToken = jwt.sign(
-        {
-          id: userData[0].id,
-          role_id: userData[0].role,
-          email: userData[0].email
-        },
-        jwtConfig.refreshTokenSecret,
-        {
-          expiresIn: jwtConfig.refreshTokenExpireTime
-        }
-      )
+      const tokenData = await functions.generateToken(userData[0].id)
       res.status(200).json({
         error: false,
         message: 'User Logged In successfully',
-        accessToken,
-        refreshToken,
-        userData: { ...userData[0], role: 'admin' }
+        accessToken: tokenData.accessToken,
+        userData: tokenData.userData,
+        permissions: await functions.getPermissions(userData[0].role_id)
       })
     } else {
       res.status(200).json({
@@ -83,36 +60,17 @@ const authMe = (req, res) => {
 
   jwt.verify(token, jwtConfig.secret, async (err, decoded) => {
     if (err) {
-      if (defaultAuthConfig.onTokenExpiration === 'logout') {
-        return res
-          .status(401)
-          .json({ error: { error: 'Invalid User' } })
-          .end()
-      } else {
-        const oldTokenDecoded = jwt.decode(token, { complete: true })
-        const payload = oldTokenDecoded.payload
-
-        const accessToken = jwt.sign(payload, jwtConfig.secret, {
-          expiresIn: jwtConfig.expireTime
-        })
-
-        // Simulate setting the new token in localStorage (client-side)
-        // For an Express route, you would not handle the client-side localStorage directly.
-        // You'd typically send the new token to the client in the response.
-        // Simulate storing the token in the response
-        res.set('Authorization', accessToken)
-
-        const obj = { userData: { ...user, password: undefined } }
-
-        return res.status(200).json(obj).end()
-      }
+      return res
+        .status(401)
+        .json({ error: { error: 'Invalid User' } })
+        .end()
     } else {
       const userId = decoded.id
       const userData = await knex('admins').where({ id: userId })
       delete userData[0].password
       userData[0].role = 'admin'
 
-      return res.status(200).json({ userData: userData[0] }).end()
+      return res.status(201).json({ userData: userData[0] }).end()
     }
   })
 }

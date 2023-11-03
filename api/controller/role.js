@@ -71,6 +71,7 @@ const paginateRole = async (req, res) => {
     })
 
     return res
+      .status(201)
       .json({
         error: false,
         message: 'Received successfully.',
@@ -81,7 +82,7 @@ const paginateRole = async (req, res) => {
       .end()
   } catch (e) {
     console.log(e)
-    res.json({ error: true, message: 'Something went wrong', data: e })
+    res.status(201).json({ error: true, message: 'Something went wrong', data: e })
   }
   res.end()
 }

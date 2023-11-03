@@ -712,6 +712,12 @@ const searchData = [
     icon: 'tabler:shield',
     title: 'Access Control (ACL)',
     category: 'chartsMisc'
+  },
+  {
+    id: 103,
+    url: '/admins',
+    title: 'Admins',
+    category: 'chartsMisc'
   }
 ]
 module.exports = searchData

@@ -5,7 +5,6 @@ require('dotenv').config()
 
 const fileUpload = require('express-fileupload')
 const path = require('path')
-const { fileURLToPath } = require('url')
 const cors = require('cors')
 const authorization = require('./api/routes/authorization.js')
 const role = require('./api/routes/role.js')
@@ -25,7 +24,7 @@ const hostname = 'localhost'
 let nextApp
 let handle
 
-const createApp = () => {
+const createApp = async () => {
   const app = express()
 
   // Define your Express middleware and routes here

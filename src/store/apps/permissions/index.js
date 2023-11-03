@@ -19,9 +19,15 @@ export const appPermissionsSlice = createSlice({
     data: [],
     total: 1,
     params: {},
-    allData: []
+    allData: [],
+    userPermissions: []
   },
-  reducers: {},
+  reducers: {
+    updatePermissions: (state, action) => {
+      state.userPermissions = action.payload
+    }
+  },
+
   extraReducers: builder => {
     builder.addCase(fetchData.fulfilled, (state, action) => {
       state.data = action.payload.permissions
@@ -31,5 +37,7 @@ export const appPermissionsSlice = createSlice({
     })
   }
 })
+
+export const { updatePermissions } = appPermissionsSlice.actions
 
 export default appPermissionsSlice.reducer

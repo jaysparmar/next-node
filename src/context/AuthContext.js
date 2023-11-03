@@ -1,5 +1,6 @@
 // ** React Imports
 import { createContext, useEffect, useState } from 'react'
+import axios from 'axios'
 
 // ** Next Import
 import { useRouter } from 'next/router'
@@ -7,6 +8,9 @@ import { useRouter } from 'next/router'
 // ** Config
 import authConfig from 'src/configs/auth'
 import api from 'src/interceptors/api'
+import themeConfig from 'src/configs/themeConfig'
+import { store } from 'src/store'
+import { updatePermissions } from 'src/store/apps/permissions'
 
 // ** Defaults
 const defaultProvider = {
@@ -74,7 +78,16 @@ const AuthProvider = ({ children }) => {
         setUser({ ...response.data.userData })
         params.rememberMe ? window.localStorage.setItem('userData', JSON.stringify(response.data.userData)) : null
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-        router.replace(redirectURL)
+        axios
+          .post(`${themeConfig.backendUrl}/api/admin/permissions/get`, null, {
+            headers: {
+              Authorization: `Bearer ${response.data.accessToken}`
+            }
+          })
+          .then(res => {
+            store.dispatch(updatePermissions(res.data))
+            router.replace(redirectURL)
+          })
       })
       .catch(err => {
         if (errorCallback) errorCallback(err)

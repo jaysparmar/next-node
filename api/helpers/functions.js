@@ -1,6 +1,9 @@
 const { createBot } = require('whatsapp-cloud-api')
 const fs = require('fs')
 const constants = require('./constants.js')
+const jwt = require('jsonwebtoken')
+
+const knex = require('../config/mysql_db.js')
 
 const getRandomFileName = name => {
   let ext = name.split('.')
@@ -76,6 +79,76 @@ const uploadFile = (filePath, imageFile) => {
   })
 }
 
+const fetchDetails = async (
+  table,
+  where = {},
+  fields = [],
+  limit = null,
+  offset = '0',
+  sort = 'id',
+  order = 'desc',
+  whereInKey = '',
+  whereInValue = {}
+) => {
+  let query = knex(table)
+
+  if (fields.length > 0) {
+    query = query.select(fields)
+  }
+
+  if (Object.keys(where).length > 0) {
+    query = query.where(where)
+  }
+
+  if (whereInKey !== '' && Object.keys(whereInValue).length > 0) {
+    query = query.whereIn(whereInKey, Object.values(whereInValue))
+  }
+
+  if (limit !== null) {
+    query = query.limit(limit).offset(offset)
+  }
+
+  query = query.orderBy(sort, order)
+
+  try {
+    const result = await query
+
+    return result
+  } catch (error) {
+    return []
+  }
+}
+
+const generateToken = async user_id => {
+  const jwt = require('jsonwebtoken')
+  const { jwtConfig } = constants
+  let userData = await fetchDetails('admins', { id: user_id })
+  userData = JSON.parse(JSON.stringify(userData[0]))
+  userData.fullName = userData.firstname + ' ' + userData.lastname
+  userData.role = 'admin'
+  delete userData.password
+  delete userData.access_token
+  const accessToken = jwt.sign(userData, jwtConfig.secret, { expiresIn: jwtConfig.expireTime })
+  console.log(accessToken)
+
+  // return
+  await knex('admins').update({ access_token: accessToken }).where({ id: userData.id })
+
+  return {
+    userData,
+    accessToken
+  }
+}
+
+const getPermissions = async role_id => {
+  const data = await fetchDetails('roles', { id: role_id })
+  if (data.length == 0) {
+    return []
+  }
+
+  return JSON.parse(data[0].permissions)
+}
+
 const wpBot = createBot(constants.whatsappFrom, constants.whatsappToken)
 
 module.exports = {
@@ -84,5 +157,8 @@ module.exports = {
   sendEmail,
   uploadFile,
   removeFile,
-  wpBot
+  wpBot,
+  fetchDetails,
+  generateToken,
+  getPermissions
 }
