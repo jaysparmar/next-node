@@ -51,10 +51,8 @@ const RolesCards = () => {
   const [totalModules, setTotalModules] = useState(0)
 
   const handleClickOpen = (item = undefined) => {
-    console.log(item)
     if (item !== undefined) {
       setRoleName(item.title)
-      console.log()
       setSelectedCheckbox(JSON.parse(item.permissions))
     }
     setOpen(true)
@@ -85,7 +83,6 @@ const RolesCards = () => {
     } else {
       rolesArr.forEach(row => {
         const id = row.toLowerCase().split(' ').join('-')
-        console.log(row)
         if (modules[row].permissions.includes('read')) {
           togglePermission(`${id}-read`)
         }
@@ -103,9 +100,6 @@ const RolesCards = () => {
   }
 
   const handleModuleSubmit = () => {
-    console.log('selectedCheckbox', selectedCheckbox)
-    console.log('roleName', roleName)
-    console.log('id', updateId)
     if (updateId === null) {
       return api.post('/api/role/create', { roleName, permissions: selectedCheckbox }).then(res => {
         setroles()

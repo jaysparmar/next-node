@@ -129,7 +129,6 @@ const generateToken = async user_id => {
   delete userData.password
   delete userData.access_token
   const accessToken = jwt.sign(userData, jwtConfig.secret, { expiresIn: jwtConfig.expireTime })
-  console.log(accessToken)
 
   // return
   await knex('admins').update({ access_token: accessToken }).where({ id: userData.id })

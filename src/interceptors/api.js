@@ -28,7 +28,6 @@ api.interceptors.response.use(
   function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
-    console.log('from interceptor', response)
 
     if (response.status === 201) {
       const token = localStorage.getItem('accessToken')
