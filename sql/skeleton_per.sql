@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 02, 2023 at 02:34 PM
+-- Generation Time: Nov 03, 2023 at 10:21 PM
 -- Server version: 10.4.6-MariaDB
 -- PHP Version: 8.1.6
 
@@ -34,7 +34,9 @@ CREATE TABLE `admins` (
   `email` varchar(255) NOT NULL,
   `password` varchar(35) NOT NULL,
   `status` enum('1','2') NOT NULL COMMENT '1=active,2=inactive',
-  `role` varchar(255) NOT NULL DEFAULT '''1''',
+  `role_id` int(11) NOT NULL,
+  `access_token` text NOT NULL,
+  `permission_reset` enum('0','1') NOT NULL DEFAULT '0',
   `created` datetime DEFAULT current_timestamp(),
   `updated` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -43,9 +45,9 @@ CREATE TABLE `admins` (
 -- Dumping data for table `admins`
 --
 
-INSERT INTO `admins` (`id`, `firstname`, `lastname`, `email`, `password`, `status`, `role`, `created`, `updated`) VALUES
-(26, 'Super', 'Admin', 'admin@admin.com', '25d55ad283aa400af464c76d713c07ad', '1', '1', '2022-12-20 15:52:56', '2023-03-20 19:50:23'),
-(83, 'Ajay', 'Chauhan', 'ajay@ditinterective.com', '25d55ad283aa400af464c76d713c07ad', '1', '2', '2023-03-21 19:59:29', '2023-03-21 20:00:10');
+INSERT INTO `admins` (`id`, `firstname`, `lastname`, `email`, `password`, `status`, `role_id`, `access_token`, `permission_reset`, `created`, `updated`) VALUES
+(1, 'Super', 'Admin', 'admin@admin.com', '25d55ad283aa400af464c76d713c07ad', '1', 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3RuYW1lIjoiU3VwZXIiLCJsYXN0bmFtZSI6IkFkbWluIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJzdGF0dXMiOiIxIiwicm9sZV9pZCI6MSwicGVybWlzc2lvbl9yZXNldCI6IjAiLCJjcmVhdGVkIjoiMjAyMi0xMi0yMFQxMDoyMjo1Ni4wMDBaIiwidXBkYXRlZCI6IjIwMjMtMTEtMDNUMjE6NTc6MzcuMDAwWiIsImZ1bGxOYW1lIjoiU3VwZXIgQWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2OTkwNDg3ODgsImV4cCI6MTY5OTA1NTk4OH0.bwK7NnZYmgdQUFc_Q98dUMaxzJmYEH9n_n4c-L8QZrY', '0', '2022-12-20 15:52:56', '2023-11-04 03:50:32'),
+(83, 'Ajay', 'Chauhan', 'meet@admin.com', '25d55ad283aa400af464c76d713c07ad', '1', 12, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODMsImZpcnN0bmFtZSI6IkFqYXkiLCJsYXN0bmFtZSI6IkNoYXVoYW4iLCJlbWFpbCI6Im1lZXRAYWRtaW4uY29tIiwic3RhdHVzIjoiMSIsInJvbGVfaWQiOjEsImFjY2Vzc190b2tlbiI6IiIsInBlcm1pc3Npb25fcmVzZXQiOiIwIiwiY3JlYXRlZCI6IjIwMjMtMDMtMjFUMTQ6Mjk6MjkuMDAwWiIsInVwZGF0ZWQiOiIyMDIzLTExLTAzVDIxOjA1OjI1LjAwMFoiLCJmdWxsTmFtZSI6IkFqYXkgQ2hhdWhhbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY5OTA0NTUzMCwiZXhwIjoxNjk5MDUyNzMwfQ.S8vjR60gjFiQgsVt4bWuRgjjH9AzGbtlBIyp7tjQ0nA', '0', '2023-03-21 19:59:29', '2023-11-04 03:36:03');
 
 -- --------------------------------------------------------
 
@@ -85,7 +87,7 @@ INSERT INTO `messages` (`id`, `wp_id`, `reply_id`, `wp_from`, `wp_to`, `type`, `
 CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `permissions` text NOT NULL
+  `permissions` text NOT NULL DEFAULT '[]'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -93,7 +95,12 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `name`, `permissions`) VALUES
-(12, 'Admin', '[\"admin-read\"]');
+(1, 'Admin', '[\"admin-create\",\"admin-delete\",\"admin-update\",\"admin-write\",\"admin-read\"]'),
+(16, 'Jay', '[\"admin-read\",\"admin-write\",\"admin-update\",\"admin-delete\",\"chat-read\",\"chat-write\",\"chat-update\",\"chat-delete\",\"settings-read\",\"settings-write\",\"settings-update\",\"x-read\",\"x-write\",\"x-update\",\"x-delete\"]'),
+(17, 'test', '[\"settings-write\",\"chat-write\"]'),
+(18, 'asd', '[\"admin-read\",\"admin-delete\",\"admin-update\"]'),
+(19, 'vdsgb', '[\"admin-read\",\"admin-write\",\"admin-update\",\"admin-delete\",\"chat-read\",\"chat-write\",\"chat-update\",\"chat-delete\",\"settings-read\",\"settings-write\",\"settings-update\",\"x-read\",\"x-write\",\"x-update\",\"x-delete\"]'),
+(20, 'fdsfsdgfasdc', '[\"admin-read\",\"admin-write\",\"admin-update\",\"admin-delete\",\"chat-read\",\"chat-write\",\"chat-update\",\"chat-delete\",\"settings-read\",\"settings-write\",\"settings-update\",\"x-read\",\"x-write\",\"x-update\",\"x-delete\"]');
 
 -- --------------------------------------------------------
 
@@ -157,7 +164,7 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `users`
