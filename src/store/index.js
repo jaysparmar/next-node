@@ -1,27 +1,43 @@
-// ** Toolkit imports
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore, combineReducers } from '@reduxjs/toolkit'
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 
-// ** Reducers
+// Import your slices
 import chat from 'src/store/apps/chat'
 import user from 'src/store/apps/user'
 import email from 'src/store/apps/email'
 import invoice from 'src/store/apps/invoice'
 import calendar from 'src/store/apps/calendar'
 import permissions from 'src/store/apps/permissions'
-import registrationSlice from 'src/store/apps/pharmacy'
+import pharmacy from 'src/store/apps/pharmacy'
 
-export const store = configureStore({
-  reducer: {
+// Configuration for redux-persist
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['pharmacy'] // Names of the slices you want to persist
+  // Other configurations as needed
+}
+
+const persistedReducer = persistReducer(
+  persistConfig,
+  combineReducers({
     user,
     chat,
     email,
     invoice,
     calendar,
     permissions,
-    registrationSlice
-  },
+    pharmacy
+  })
+)
+
+export const store = configureStore({
+  reducer: persistedReducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false
     })
 })
+
+export const persistor = persistStore(store)

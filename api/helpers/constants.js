@@ -37,13 +37,13 @@ const jwtConfig = {
 }
 
 const mailConfig = {
-  mail: 'ajay@ditinteractive.com',
-  password: ''
+  mail: 'medsers@espeech.in',
+  password: 'Infinitie@0124'
 }
 
 const transporter = nodemailer.createTransport({
   port: 465, // true for 465, false for other ports
-  host: 'smtp.gmail.com',
+  host: 'smtp.hostinger.com',
   auth: {
     user: mailConfig.mail,
     pass: mailConfig.password

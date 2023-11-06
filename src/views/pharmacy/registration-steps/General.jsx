@@ -37,7 +37,7 @@ const GeneralDetails = () => {
   // ** Hook
   const theme = useTheme()
   const dispatch = useDispatch()
-  const data = useSelector(state => state.registrationSlice).registrationData
+  const data = useSelector(state => state.pharmacy).registrationData
 
   return (
     <>

@@ -42,10 +42,11 @@ const PharmacyDetails = () => {
   // ** Hook
   const [startDate, setStartDate] = useState(null)
   const dispatch = useDispatch()
-  const data = useSelector(state => state.registrationSlice).registrationData
+  const data = useSelector(state => state.pharmacy).registrationData
 
   const handleDateChange = dates => {
     setStartDate(dates)
+    dispatch(setRegistrationData({ ...data, registration_date: dates }))
   }
 
   return (
@@ -66,21 +67,21 @@ const PharmacyDetails = () => {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <CustomTextField fullWidth label='Licence No.' placeholder='Enter Licence No.' type='email' />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Box display={'flex'} flexDirection={'column'}>
-            <FormLabel>Pharmacy Registration Document</FormLabel>
-            <Button component='label' variant='contained' startIcon={<Icon icon='material-symbols:upload' />}>
-              Upload file
-              <VisuallyHiddenInput type='file' />
-            </Button>
-          </Box>
+          <CustomTextField
+            value={data.license_no}
+            onChange={e => {
+              dispatch(setRegistrationData({ ...data, license_no: e.target.value }))
+            }}
+            fullWidth
+            label='Licence No.'
+            placeholder='Enter Licence No.'
+            type='email'
+          />
         </Grid>
         <Grid item xs={12} sm={6}>
           <DatePicker
             selectsRange={false}
-            value={startDate}
+            value={data.registration_date}
             id='date-range-picker'
             onChange={handleDateChange}
             shouldCloseOnSelect={true}
@@ -88,10 +89,26 @@ const PharmacyDetails = () => {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <CustomTextField fullWidth label='Whatsapp Business Number' placeholder='Whatsapp Business Number' />
+          <CustomTextField
+            fullWidth
+            value={data.whatsapp_no}
+            onChange={e => {
+              dispatch(setRegistrationData({ ...data, whatsapp_no: e.target.value }))
+            }}
+            label='Whatsapp Business Number'
+            placeholder='Whatsapp Business Number'
+          />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <CustomTextField fullWidth label='Awards and Rewards' placeholder='Enter Awards and Rewards' />
+          <CustomTextField
+            fullWidth
+            value={data.awards}
+            onChange={e => {
+              dispatch(setRegistrationData({ ...data, awards: e.target.value }))
+            }}
+            label='Awards and Rewards'
+            placeholder='Enter Awards and Rewards'
+          />
         </Grid>
       </Grid>
       <Typography sx={{ mt: 5 }} variant='h4'>
@@ -100,10 +117,27 @@ const PharmacyDetails = () => {
       <Divider sx={{ mb: 5, mt: 1 }} />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={6}>
-          <CustomTextField fullWidth label='Account Number' placeholder='Enter Account Number.' />
+          <CustomTextField
+            fullWidth
+            value={data.bank_account_number}
+            onChange={e => {
+              dispatch(setRegistrationData({ ...data, bank_account_number: e.target.value }))
+            }}
+            label='Account Number'
+            placeholder='Enter Account Number.'
+          />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <CustomTextField fullWidth label='ISFC Code' placeholder='Enter ISFC Code' type='email' />
+          <CustomTextField
+            fullWidth
+            value={data.bank_ifsc}
+            onChange={e => {
+              dispatch(setRegistrationData({ ...data, bank_ifsc: e.target.value }))
+            }}
+            label='ISFC Code'
+            placeholder='Enter ISFC Code'
+            type='email'
+          />
         </Grid>
       </Grid>
     </>

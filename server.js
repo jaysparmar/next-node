@@ -14,6 +14,7 @@ const verifyToken = require('./api/middleware/jwt.js')
 const constants = require('./api/helpers/constants.js')
 const webhook = require('./api/controller/webhook.js')
 const { authMe } = require('./api/controller/authorization.js')
+const { sendEmail } = require('./api/helpers/functions.js')
 
 const mode = process.env.NEXT_PUBLIC_MODE // dev, production
 const port = mode === 'production' ? 3000 : process.env.NEXT_PUBLIC_DEV_SERVER_PORT

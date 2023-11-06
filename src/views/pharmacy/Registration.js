@@ -23,6 +23,7 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import PharmacyDetails from './registration-steps/PharmacyDetails'
 import General from './registration-steps/General'
 import AddressDetails from './registration-steps/Address'
+import Review from './registration-steps/Review'
 
 import StepReview from 'src/views/pages/wizard-examples/create-deal/StepReview'
 
@@ -51,7 +52,7 @@ const steps = [
   {
     icon: 'tabler:checkbox',
     subtitle: 'Launch a deal',
-    title: 'Review & Complete'
+    title: 'Upload & Review'
   }
 ]
 
@@ -128,7 +129,7 @@ const Registration = () => {
       case 2:
         return <AddressDetails />
       case 3:
-        return <StepReview />
+        return <Review />
       default:
         return null
     }

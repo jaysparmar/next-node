@@ -19,6 +19,8 @@ import {
 import { GoogleMap, LoadScript, Marker, useJsApiLoader } from '@react-google-maps/api'
 import { Box } from '@mui/system'
 import CustomTextField from 'src/@core/components/mui/text-field'
+import { useSelector, useDispatch } from 'react-redux'
+import { setRegistrationData } from 'src/store/apps/pharmacy'
 
 const LocationSearch = () => {
   const [open, setOpen] = useState(false)
@@ -26,6 +28,8 @@ const LocationSearch = () => {
   const [autocomplete, setAutocomplete] = useState(null)
   const [map, setMap] = useState(null)
   const [geocoder, setGeocoder] = useState(null)
+  const dispatch = useDispatch()
+  const data = useSelector(state => state.pharmacy).registrationData
 
   const [location, setLocation] = useState({
     address_components: []
@@ -50,6 +54,7 @@ const LocationSearch = () => {
       lat: e.latLng.lat(),
       lng: e.latLng.lng()
     })
+    dispatch(setRegistrationData({ ...data, lat: e.latLng.lat(), lng: e.latLng.lng() }))
 
     if (geocoder) {
       geocoder.geocode({ location: { lat: e.latLng.lat(), lng: e.latLng.lng() } }, (results, status) => {
@@ -126,6 +131,8 @@ const LocationSearch = () => {
           {location.address_components.length !== 0 && (
             <Grid item xs={12} sm={12}>
               <TextField
+                fullWidth
+                disabled
                 multiline
                 maxRows={12}
                 value={location.formatted_address}
