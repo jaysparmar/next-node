@@ -2,7 +2,6 @@ const md5 = require('md5')
 const knex = require('../config/mysql_db.js')
 const model = require('../model/admin.js')
 const validation = require('../validation/admin.js')
-const RoleModel = require('../model/role.js')
 
 const createAdminUser = async (req, res) => {
   try {
@@ -59,8 +58,6 @@ const createAdminUser = async (req, res) => {
   } catch (e) {
     return res.json({ error: true, message: 'Something went wrong', data: e })
   }
-
-  return res.end()
 }
 
 const paginateAdmin = async (req, res) => {
