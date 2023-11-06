@@ -105,13 +105,13 @@ const StepDealDetails = () => {
       </Grid>
       <Grid item xs={12} sm={6}>
         <DatePicker
-          selectsRange
+          selectsRange={false}
           endDate={endDate}
           selected={startDate}
           startDate={startDate}
           id='date-range-picker'
           onChange={handleDateChange}
-          shouldCloseOnSelect={false}
+          shouldCloseOnSelect={true}
           customInput={<CustomInput label='Deal Duration' start={startDate} end={endDate} />}
         />
       </Grid>

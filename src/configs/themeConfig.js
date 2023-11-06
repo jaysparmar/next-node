@@ -36,7 +36,8 @@ const themeConfig = {
   responsiveFontSizes: false /* true | false */,
   disableRipple: false /* true | false */,
   disableCustomizer: false /* true | false */,
-  toastPosition: 'top-right' /* top-left | top-center | top-right | bottom-left | bottom-center | bottom-right */
+  toastPosition: 'top-right' /* top-left | top-center | top-right | bottom-left | bottom-center | bottom-right */,
+  showSideBarName: false
 }
 
 export default themeConfig
