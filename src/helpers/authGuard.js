@@ -18,19 +18,20 @@ const getPermissions = () => {
 }
 
 const validateView = (View, module, permission = null) => {
+  const userPermission = getPermissions()
   if (permission == null) {
     if (
-      getPermissions().includes(module + '-read') ||
-      getPermissions().includes(module + '-write') ||
-      getPermissions().includes(module + '-update') ||
-      getPermissions().includes(module + '-delete')
+      userPermission.includes(module + '-read') ||
+      userPermission.includes(module + '-write') ||
+      userPermission.includes(module + '-update') ||
+      userPermission.includes(module + '-delete')
     ) {
       return View
     }
 
     return Error401
   }
-  if (getPermissions().includes(module + '-' + permission)) {
+  if (userPermission.includes(module + '-' + permission)) {
     return View
   }
 

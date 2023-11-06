@@ -13,7 +13,7 @@ let dbconfig = {
   user: 'root',
   port: '',
   password: '',
-  database: 'medser'
+  database: 'medsers'
 }
 const mode = 'dev' // dev,live
 
@@ -23,7 +23,7 @@ if (mode == 'live') {
     user: 'root',
     port: '',
     password: '',
-    database: 'medser'
+    database: 'medsers'
   }
 
   BASE_URL = ``
