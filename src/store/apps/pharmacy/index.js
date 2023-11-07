@@ -4,15 +4,19 @@ import { createSlice } from '@reduxjs/toolkit'
 export const registrationSlice = createSlice({
   name: 'registrationData',
   initialState: {
-    registrationData: {}
+    registrationData: {},
+    userData: {}
   },
   reducers: {
     setRegistrationData: (state, action) => {
       state.registrationData = action.payload
+    },
+    setUserData: (state, action) => {
+      state.userData = action.payload
     }
   }
 })
 
-export const { setRegistrationData } = registrationSlice.actions
+export const { setRegistrationData, setUserData } = registrationSlice.actions
 
 export default registrationSlice.reducer

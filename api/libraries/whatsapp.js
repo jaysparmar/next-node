@@ -4,7 +4,7 @@ const fs = require('fs')
 const fbGraphURL = 'https://graph.facebook.com/v18.0'
 
 const whatsappToken =
-  'EAANUTgi7hgIBOyIYOtRMWYxMlj0sX8B2Very3ICASGfWOEAwhsRuZCgUuZC81rSyGM27fjbzEpdDtIhL7UmrvBgmVYi8mku3zr814OXaI1ZBFRpu1fXOLyeMUYrRQKbZCulHP08aZBZBk9wwRF7e9PP3ZBIS71W6IPg6ALVoGhVclSZA2ZCeZB3suE1T1AUmqMsZBprTVN5WZCpYPDMLzt7IRgYZD'
+  'EAANUTgi7hgIBO3RrrsaRTmxQ3tcxtTW8nFR6XdZAvDoZBFhCoglRlvjqZBu3jC61ZBzNpS0ZAMnFaLnnERJvmjoyB4NYtqnprWrp8OuoZB0jgxY2KEAH7kTp9imiMUJ1ZCTSPuYB0WTTwxqoxsGyuLonuj6PsvnRIkMvfA4M99RZCy8xWpZCZBHaB3Ml74JO7zJwtplrhlcP1gM4rkSdhfEaUZD'
 const from = '128759850119056'
 const STATIC_PATH = 'public/assets/'
 

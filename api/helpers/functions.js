@@ -13,7 +13,7 @@ const getRandomFileName = name => {
 }
 
 const getStaticUrl = fileName => {
-  return `${constants.BASE_URL}${constants.STATIC_PATH}/${fileName}`
+  return `${constants.BASE_URL}/${fileName}`
 }
 
 const sendEmail = async (subject, sendTo, text, html) => {

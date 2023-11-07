@@ -15,6 +15,8 @@ const constants = require('./api/helpers/constants.js')
 const webhook = require('./api/controller/webhook.js')
 const { authMe } = require('./api/controller/authorization.js')
 const { sendEmail } = require('./api/helpers/functions.js')
+const pharmacy = require('./api/routes/pharmacy.js')
+const orders = require('./api/routes/orders.js')
 
 const mode = process.env.NEXT_PUBLIC_MODE // dev, production
 const port = mode === 'production' ? 3000 : process.env.NEXT_PUBLIC_DEV_SERVER_PORT
@@ -41,6 +43,8 @@ const createApp = async () => {
   app.use(`${sub_uri}/role`, verifyToken.verifyToken, role)
   app.use(`${sub_uri}/admin`, verifyToken.verifyToken, admin)
   app.use(`${sub_uri}/location`, verifyToken.verifyToken, location)
+  app.use(`${sub_uri}/pharmacy`, pharmacy)
+  app.use(`${sub_uri}/order`, orders)
   app.post('/auth/me', authMe)
   app.get('/app-bar/search/', (req, res) => {
     const { q = '' } = req.query

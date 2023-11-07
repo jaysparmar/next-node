@@ -34,7 +34,7 @@ const createAdminUser = async (req, res) => {
 
     const checkEmail = await model.getUserDetail({ email })
     if (checkEmail.length) {
-      return res.status(200).json({
+      return res.status(req.successStatus).json({
         error: true,
         message: 'Email already exist...',
         data: []
@@ -43,7 +43,7 @@ const createAdminUser = async (req, res) => {
 
     const id = await model.insertAdmin({ ...data, password: md5(password) })
     if (id) {
-      return res.status(200).json({
+      return res.status(req.successStatus).json({
         error: false,
         message: 'User has been created',
         data: id
@@ -99,7 +99,7 @@ const paginateAdmin = async (req, res) => {
     res.end()
   } catch (e) {
     console.log(e)
-    res.json({ error: true, message: 'Something went wrong', data: e })
+    res.status(req.successStatus).json({ error: true, message: 'Something went wrong', data: e })
   }
   res.end()
 }

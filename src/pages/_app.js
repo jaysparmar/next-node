@@ -1,6 +1,7 @@
 // ** Next Imports
 import Head from 'next/head'
 import { Router } from 'next/router'
+import '../global.css'
 
 // ** Store Imports
 import { store, persistor } from 'src/store'

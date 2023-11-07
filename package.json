@@ -10,7 +10,7 @@
     "lint": "eslint --fix \"src/**/*.{js,jsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "build:icons": "node src/iconify-bundle/bundle-icons-react.js",
-    "live": "ngrok http --domain=communal-kindly-yak.ngrok-free.app 3000",
+    "live": "ngrok http --domain=communal-kindly-yak.ngrok-free.app 8000",
     "dev:server": "nodemon --ignore ./src/ server.js",
     "dev:client": "next dev"
   },

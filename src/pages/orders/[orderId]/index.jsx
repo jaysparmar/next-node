@@ -6,7 +6,7 @@ import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 import { Box, Container } from '@mui/system'
 import { Card, CardContent, Typography } from '@mui/material'
-import Registration from 'src/views/client/order/Order'
+import Order from 'src/views/client/order/Order'
 
 const WizardExamples = () => {
   return (
@@ -30,7 +30,7 @@ const WizardExamples = () => {
         </Box>
       </Card>
       <DatePickerWrapper sx={{ marginTop: '20px' }}>
-        <Registration />
+        <Order />
       </DatePickerWrapper>
     </Container>
   )
