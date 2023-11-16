@@ -1,8 +1,6 @@
 import Error401 from 'src/pages/401'
 import { store } from 'src/store'
 
-const allPermissions = ['admin-read', 'admin-update', 'admin-delete', 'admin-create']
-
 const getPermissions = () => {
   const state = store.getState()
 
