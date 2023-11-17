@@ -17,7 +17,6 @@ import {
   Table
 } from '@mui/material'
 import { GoogleMap, LoadScript, Marker, useJsApiLoader } from '@react-google-maps/api'
-import { Box } from '@mui/system'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { useSelector, useDispatch } from 'react-redux'
 import { setRegistrationData } from 'src/store/apps/pharmacy'
@@ -30,6 +29,10 @@ const LocationSearch = () => {
   const [geocoder, setGeocoder] = useState(null)
   const dispatch = useDispatch()
   const data = useSelector(state => state.pharmacy).registrationData
+
+  const [addressData, setAddressData] = useState({
+    title: ''
+  })
 
   const [location, setLocation] = useState({
     address_components: []
@@ -77,64 +80,24 @@ const LocationSearch = () => {
 
   return (
     <div>
-      <LoadScript googleMapsApiKey='AIzaSyAjeC2w8ekfa4BCKHMdu-su-muNQmT7xnk' libraries={['places']}>
+      <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GCP_KEY} libraries={['places']}>
         <Dialog open={true} onClose={handleClose} fullWidth maxWidth='sm'>
           <DialogTitle>Selected Location</DialogTitle>
           <DialogContent>
             <Grid container spacing={4}>
               <Grid item xs={12} sm={6}>
+                <TextField fullWidth label='Title' placeholder='Enter Title' on />
+              </Grid>
+              <Grid item xs={12} sm={6}>
                 <Autocomplete
-                  style={{ zIndex: '10000' }}
+                  style={{ zIndex: '10800' }}
                   onLoad={autoComp => setAutocomplete(autoComp)}
                   onPlaceChanged={handleSelect}
                 >
                   <CustomTextField fullWidth label='Address' placeholder='Enter Address' />
                 </Autocomplete>
               </Grid>
-              <Grid item xs={12} sm={6}></Grid>
-              <Grid item xs={12} lg={6} xl={7}>
-                <Grid item xs={12}>
-                  <TableContainer>
-                    <Table>
-                      <TableBody
-                        sx={{
-                          '& .MuiTableCell-root': {
-                            borderBottom: 0,
-                            verticalAlign: 'top',
-                            '&:last-of-type': { px: '0 !important' },
-                            '&:first-of-type': { pl: '0 !important' },
-                            py: theme => `${theme.spacing(0.75)} !important`
-                          }
-                        }}
-                      >
-                        {location.address_components.map((row, index) => {
-                          return (
-                            <TableRow key={index}>
-                              <TableCell>
-                                <Typography noWrap sx={{ fontWeight: 500, color: 'text.secondary' }}>
-                                  {row.types.map((heading, index) => {
-                                    if (heading === 'political') {
-                                      return ''
-                                    }
-                                    if (index === 0) {
-                                      return heading
-                                    }
 
-                                    return ' or ' + heading
-                                  })}
-                                </Typography>
-                              </TableCell>
-                              <TableCell>
-                                <Typography sx={{ color: 'text.secondary' }}>{row.long_name}</Typography>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Grid>
-              </Grid>
               {location.address_components.length !== 0 && (
                 <Grid item xs={12} sm={12}>
                   <TextField
@@ -167,6 +130,49 @@ const LocationSearch = () => {
                 </GoogleMap>
               </div>
             )}
+            <Grid item xs={12} lg={12} xl={12}>
+              <Grid item xs={12}>
+                <TableContainer>
+                  <Table>
+                    <TableBody
+                      sx={{
+                        '& .MuiTableCell-root': {
+                          borderBottom: 0,
+                          verticalAlign: 'top',
+                          '&:last-of-type': { px: '0 !important' },
+                          '&:first-of-type': { pl: '0 !important' },
+                          py: theme => `${theme.spacing(0.75)} !important`
+                        }
+                      }}
+                    >
+                      {location.address_components.map((row, index) => {
+                        return (
+                          <TableRow key={index}>
+                            <TableCell>
+                              <Typography noWrap sx={{ fontWeight: 500, color: 'text.secondary' }}>
+                                {row.types.map((heading, index) => {
+                                  if (heading === 'political') {
+                                    return ''
+                                  }
+                                  if (index === 0) {
+                                    return heading
+                                  }
+
+                                  return ' or ' + heading
+                                })}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Typography sx={{ color: 'text.secondary' }}>{row.long_name}</Typography>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Grid>
+            </Grid>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color='primary'>

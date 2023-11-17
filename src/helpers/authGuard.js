@@ -5,14 +5,6 @@ const getPermissions = () => {
   const state = store.getState()
 
   return state.permissions.userPermissions
-
-  // return allPermissions
-  // const data = localStorage.getItem('userData')
-  // if (data) {
-  //   return JSON.parse(data).permissions
-  // }
-
-  // return []
 }
 
 const validateView = (View, module, permission = null) => {
