@@ -91,6 +91,8 @@
     "react-redux": "8.0.5",
     "recharts": "2.5.0",
     "redux-persist": "^6.0.0",
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2",
     "stylis": "4.1.4",
     "stylis-plugin-rtl": "2.1.1",
     "unique-filename": "^2.0.1",

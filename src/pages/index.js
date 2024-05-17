@@ -1,5 +1,5 @@
 const Home = () => {
-  return <>Home Page Sequelize</>
+  return <>Home Page</>
 }
 
 export default Home

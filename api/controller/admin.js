@@ -1,61 +1,58 @@
 const md5 = require('md5')
 const knex = require('../config/mysql_db.js')
 const model = require('../model/admin.js')
+const model1 = require('../model/admin_sequelize.js')
 const validation = require('../validation/admin.js')
+const Admin = require('../models/Admin.js')
 
+// Function to create a new admin user
 const createAdminUser = async (req, res) => {
   try {
-    const { firstname, lastname, email, password, role } = req.body
+    const { firstname, lastname, email, password, role_id, role } = req.body
+
+    console.log(req.body)
 
     const data = {
-      firstname: firstname,
-      lastname: lastname,
-      email: email,
-      password: password,
-      role: role,
-      status: 1
+      firstname,
+      lastname,
+      email,
+      password,
+      role_id,
+      status: 1 // Assuming new admin is active by default
     }
 
     const checkValidation = validation.createValidateUser(data)
+
     if (checkValidation.error) {
       const details = checkValidation.error.details
-
-      const message = details.map(i => {
-        const err_msg = i.message
-
-        return err_msg.replace(/\"/g, '')
-      })
+      const message = details.map(i => i.message.replace(/\"/g, ''))
 
       return res.json({
         error: true,
-        message: message
+        message
       })
     }
 
-    const checkEmail = await model.getUserDetail({ email })
-    if (checkEmail.length) {
+    const checkEmail = await model1.getUserDetail({ email })
+
+    if (checkEmail) {
       return res.status(req.successStatus).json({
         error: true,
-        message: 'Email already exist...',
+        message: 'Email already exists...',
         data: []
       })
     }
 
-    const id = await model.insertAdmin({ ...data, password: md5(password) })
-    if (id) {
-      return res.status(req.successStatus).json({
-        error: false,
-        message: 'User has been created',
-        data: id
-      })
-    }
+    const newAdmin = await Admin.create({ ...data, password: md5(password) })
 
-    return res.json({
-      error: true,
-      message: 'User has been not created',
-      data: id
+    return res.status(req.successStatus).json({
+      error: false,
+      message: 'User has been created',
+      data: newAdmin.id
     })
   } catch (e) {
+    console.log(e)
+
     return res.json({ error: true, message: 'Something went wrong', data: e })
   }
 }
@@ -66,25 +63,24 @@ const paginateAdmin = async (req, res) => {
       return false
     }
     let { offset = 0, limit = 10, order = 'asc', sort = 'id', search, status } = req.body
-
     let searchFrom = ['firstname', 'lastname', 'email']
-    const total = await model.paginateAdminTotal(searchFrom, search, status)
+    const total = await model1.paginateAdminTotal(searchFrom, search, status)
 
-    const rows = await model.paginateAdmin(limit, offset, searchFrom, status, sort, search, order)
+    const rows = await model1.paginateAdmin(limit, offset, searchFrom, status, sort, search, order)
 
-    let data_rows = []
+    let dataRows = []
     if (order === 'asc') {
-      let sr = total.total - limit * offset
-      await rows.forEach(row => {
+      let sr = total - limit * offset
+      rows.forEach(row => {
         row.sr = sr
-        data_rows.push(row)
+        dataRows.push(row)
         sr--
       })
     } else {
       let sr = offset + 1
-      await rows.forEach(row => {
+      rows.forEach(row => {
         row.sr = sr
-        data_rows.push(row)
+        dataRows.push(row)
         sr++
       })
     }
@@ -92,16 +88,14 @@ const paginateAdmin = async (req, res) => {
       error: false,
       message: 'Admin received successfully.',
       data: {
-        rows: data_rows,
+        rows: dataRows,
         total
       }
     })
-    res.end()
-  } catch (e) {
-    console.log(e)
-    res.status(req.successStatus).json({ error: true, message: 'Something went wrong', data: e })
+  } catch (error) {
+    console.error(error)
+    res.status(req.successStatus).json({ error: true, message: 'Something went wrong', data: error })
   }
-  res.end()
 }
 
 const updateAdmin = async (req, res) => {
@@ -133,7 +127,8 @@ const updateAdmin = async (req, res) => {
       })
     }
 
-    const checkEmail = await model.checkEmail({ email }, { id })
+    const checkEmail = await model1.checkEmail({ email }, { id })
+
     if (checkEmail.length) {
       return res.status(200).json({
         error: true,
@@ -151,14 +146,22 @@ const updateAdmin = async (req, res) => {
     }
     if (password) updateData.password = md5(password)
 
-    const update = await model.updateAdmin({ id }, updateData)
+    const update = await model1.updateAdmin({ id }, updateData)
+
     if (update) {
       return res.json({
         error: false,
         message: 'User has been updated'
       })
+    } else {
+      return res.json({
+        error: true,
+        message: 'User is Already Update'
+      })
     }
   } catch (error) {
+    console.log(error)
+
     return res.json({
       error: true,
       message: 'something want wrong',
@@ -172,23 +175,31 @@ const updateAdmin = async (req, res) => {
 const deleteAdmin = async (req, res) => {
   try {
     const { id } = req.body
-    const status = await model.deleteAdmin({ id })
 
-    if (status) {
-      res.json({
+    // Use Sequelize's destroy method to delete the admin
+    const rowsDeleted = await Admin.destroy({ where: { id } })
+
+    if (rowsDeleted > 0) {
+      // If at least one row was deleted, respond with success message
+      return res.json({
         error: false,
         message: 'User has been deleted'
       })
+    } else {
+      // If no rows were deleted (admin with given id not found), respond with appropriate message
+      return res.json({
+        error: true,
+        message: 'User not found'
+      })
     }
   } catch (error) {
-    res.json({
+    // If any error occurs during the deletion process, respond with error message
+    return res.json({
       error: true,
-      message: 'something went wrong',
+      message: 'Something went wrong',
       data: error
     })
   }
-
-  return res.end()
 }
 
 const modulesListing = async (req, res) => {
@@ -213,5 +224,6 @@ module.exports = {
   updateAdmin,
   deleteAdmin,
   modulesListing,
+
   getPermissions
 }

@@ -13,7 +13,7 @@ let dbconfig = {
   user: 'root',
   port: '',
   password: '',
-  database: 'medsers'
+  database: 'next-node-sequelize'
 }
 const mode = 'dev' // dev,live
 
@@ -23,7 +23,7 @@ if (mode == 'live') {
     user: 'root',
     port: '',
     password: '',
-    database: 'medsers'
+    database: 'next-node-sequelize  '
   }
 
   BASE_URL = ``

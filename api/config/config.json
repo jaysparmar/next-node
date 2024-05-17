@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "next-node-sequelize",
+    "host": "",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "next-node-sequelize",
+    "host": "",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "next-node-sequelize",
+    "host": "",
+    "dialect": "mysql"
+  }
+}

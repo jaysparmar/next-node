@@ -12,15 +12,15 @@ const admin = require('./api/routes/admin.js')
 const location = require('./api/routes/location.js')
 const verifyToken = require('./api/middleware/jwt.js')
 const constants = require('./api/helpers/constants.js')
-const webhook = require('./api/controller/webhook.js')
 const { authMe } = require('./api/controller/authorization.js')
 const { sendEmail } = require('./api/helpers/functions.js')
-const pharmacy = require('./api/routes/pharmacy.js')
 const orders = require('./api/routes/orders.js')
 
 const mode = process.env.NEXT_PUBLIC_MODE // dev, production
 const port = mode === 'production' ? 3000 : process.env.NEXT_PUBLIC_DEV_SERVER_PORT
 const sub_uri = constants.SUB_URI
+const sequelize = require('./api/database/database.js')
+const userRoutes = require('./api/routes/userRoutes.js')
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = 'localhost'
@@ -36,16 +36,18 @@ const createApp = async () => {
   app.use(fileUpload())
   app.use(constants.STATIC_PATH, express.static(path.join(__dirname, 'public')))
 
-  // Define your API routes with Express
-  app.use(`${sub_uri}/webhook`, webhook.webhook)
+  //sequelize remain
 
   app.use(`${sub_uri}/authorization`, authorization)
   app.use(`${sub_uri}/role`, verifyToken.verifyToken, role)
-  app.use(`${sub_uri}/admin`, verifyToken.verifyToken, admin)
   app.use(`${sub_uri}/location`, verifyToken.verifyToken, location)
-  app.use(`${sub_uri}/pharmacy`, pharmacy)
   app.use(`${sub_uri}/order`, orders)
   app.post('/auth/me', authMe)
+
+  //sequelize conversion done bellow
+  app.use(`${sub_uri}/admin`, verifyToken.verifyToken, admin)
+  app.use(`${sub_uri}/users`, userRoutes)
+
   app.get('/app-bar/search/', (req, res) => {
     const { q = '' } = req.query
     const queryLowered = q.toLowerCase()
@@ -116,9 +118,11 @@ const createApp = async () => {
     })
   }
 
-  app.listen(port, err => {
-    if (err) throw err
-    console.log('> Ready on http://localhost:' + port)
+  sequelize.sync().then(() => {
+    app.listen(port, err => {
+      if (err) throw err
+      console.log('> Ready on http://localhost:' + port)
+    })
   })
 }
 

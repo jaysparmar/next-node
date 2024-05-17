@@ -31,8 +31,8 @@ import Icon from 'src/@core/components/icon'
 
 const PageConfig = {
   listingUrl: `/api/admin/listing`,
-  editUrl: '',
-  deleteUrl: '',
+  editUrl: '/api/admin/update',
+  deleteUrl: '/api/admin/delete',
   module: '',
   pageTitle: '',
   createText: 'Create Admin',
@@ -124,7 +124,7 @@ const UsersTable = () => {
             </Button>
           )}
           {authGuard.hasPermission('admin', 'delete') && (
-            <Button color='error'>
+            <Button color='error' onClick={e => handleDelete(e, params.row.id)}>
               <Icon icon='icon-park-twotone:delete' />
             </Button>
           )}
@@ -197,12 +197,45 @@ const UsersTable = () => {
     setShow(false)
   }
 
+  const handleDelete = async (e, id) => {
+    e.preventDefault()
+
+    await api
+      .post(PageConfig.deleteUrl, { id: id })
+      .then(res => {
+        if (res.data.error) {
+          return toast.error(res.data.message)
+        } else {
+          fetchTableData()
+
+          return toast.success(res.data.message)
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
   const AddDialog = ({ dialogData }) => {
     console.log(dialogData)
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
       e.preventDefault()
-      console.log('hello modal submit')
+
+      await api
+        .post(PageConfig.editUrl, { firstname: prefill.firstname, id: prefill.id, email: prefill.email })
+        .then(res => {
+          if (res.data.error) {
+            return toast.error(res.data.message)
+          } else {
+            handleClose()
+
+            return toast.success(res.data.message)
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
 
     const [prefill, setPrefill] = useState(dialogData)

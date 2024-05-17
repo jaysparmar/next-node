@@ -18,7 +18,7 @@ const createValidateUser = create_data => {
       'string.empty': `"password" is a required field.`,
       'string.length': `"password" must contain 35 characters`
     }),
-    role: Joi.number().required().messages({
+    role_id: Joi.number().required().messages({
       'number.empty': `"Role" is a required field.`,
       'number.base': `"Role" must be a number.`
     }),
@@ -35,13 +35,13 @@ const validateUpdateUser = update_data => {
   const JoiSchema = Joi.object({
     id: Joi.number().required().label('id'),
     firstname: Joi.string().trim().min(1).max(255).required().label('first name'),
-    lastname: Joi.string().trim().min(1).max(255).required().label('last name'),
-    email: Joi.string().email().trim().required().label('Email'),
-    role: Joi.number().required().messages({
+    lastname: Joi.string().trim().min(1).max(255).label('last name'),
+    email: Joi.string().email().trim().label('Email'),
+    role: Joi.number().messages({
       'number.empty': `"Role" is a required field.`,
       'number.base': `"Role" must be a number.`
     }),
-    status: Joi.number().required().label('status'),
+    status: Joi.number().label('status'),
     password: Joi.any().optional().label('password')
   }).options({ abortEarly: false })
 
