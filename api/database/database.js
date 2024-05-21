@@ -2,7 +2,7 @@
 
 const { Sequelize } = require('sequelize')
 
-const sequelize = new Sequelize('next-node-sequelize', 'root', '', {
+const sequelize = new Sequelize('seq_trial', 'root', '', {
   host: '',
   dialect: 'mysql'
 })

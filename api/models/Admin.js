@@ -4,7 +4,7 @@ const { DataTypes } = require('sequelize')
 const sequelize = require('../database/database')
 
 const Admin = sequelize.define(
-  'admins1',
+  'admins',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -39,7 +39,7 @@ const Admin = sequelize.define(
       allowNull: false
     },
     access_token: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(512), // Adjust the length as needed
       allowNull: true
     },
     permission_reset: {
@@ -59,7 +59,7 @@ const Admin = sequelize.define(
     }
   },
   {
-    tableName: 'admins1',
+    tableName: 'admins',
     timestamps: false // Disable automatic `createdAt` and `updatedAt` columns
   }
 )

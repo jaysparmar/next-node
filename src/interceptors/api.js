@@ -32,7 +32,7 @@ api.interceptors.response.use(
     if (response.status === 201) {
       const token = localStorage.getItem('accessToken')
       axios
-        .post(`${backendUrl}/api/admin/permissions/get`, null, {
+        .post(`${backendUrl}/api/admin/permissions-get`, null, {
           headers: {
             Authorization: `Bearer ${token}`
           }

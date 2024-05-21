@@ -12,6 +12,38 @@ const getUserDetail = async where => {
   }
 }
 
+const getAdminDetails = async where => {
+  try {
+    const adminDetails = await User.findAll({
+      where: where
+    })
+
+    return adminDetails
+  } catch (error) {
+    console.error('Error fetching admin details:', error)
+    throw new Error('Error fetching admin details')
+  }
+}
+
+const updateAdminChange = async (id, data) => {
+  try {
+    const [updated] = await User.update(data, {
+      where: { id: id }
+    })
+
+    if (updated) {
+      const updatedAdmin = await User.findByPk(id)
+
+      return updatedAdmin
+    } else {
+      throw new Error('Admin not found')
+    }
+  } catch (error) {
+    console.error('Error updating admin details:', error)
+    throw new Error('Error updating admin details')
+  }
+}
+
 const paginateAdminTotal = async (searchFrom, search, status) => {
   try {
     const whereClause = {}
@@ -96,5 +128,7 @@ module.exports = {
   paginateAdmin,
   paginateAdminTotal,
   updateAdmin,
-  checkEmail
+  checkEmail,
+  getAdminDetails,
+  updateAdminChange
 }

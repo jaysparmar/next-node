@@ -8,6 +8,6 @@ router.post('/listing', admin.paginateAdmin)
 router.post('/update', admin.updateAdmin)
 router.post('/delete', admin.deleteAdmin)
 router.post('/modules', admin.modulesListing)
-router.post('/permissions/get', admin.getPermissions)
+router.post('/permissions-get', admin.getPermissions)
 
 module.exports = router

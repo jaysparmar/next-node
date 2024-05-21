@@ -1,78 +1,98 @@
 const jwt = require('jsonwebtoken')
 const md5 = require('md5')
-const knex = require('../config/mysql_db.js')
 const constants = require('../helpers/constants.js')
 const functions = require('../helpers/functions.js')
-const model = require('../model/admin.js')
+const model = require('../model/admin_sequelize.js')
+const Admin = require('../models/Admin.js')
 
 const login = async (req, res) => {
-  let { email, password } = req.body
+  try {
+    let { email, password } = req.body
 
-  let creds = {
-    email: email,
-    password: md5(password),
-    status: '1'
-  }
-  let userData = await model.getAdminDetails(creds)
-  if (userData.length) {
-    const { status } = userData[0]
+    let creds = {
+      email: email,
+      password: md5(password),
+      status: '1'
+    }
 
-    if (status === '1') {
-      // try {
-      const tokenData = await functions.generateToken(userData[0].id)
-      res.status(200).json({
-        error: false,
-        message: 'User Logged In successfully',
-        accessToken: tokenData.accessToken,
-        userData: tokenData.userData,
-        permissions: await functions.getPermissions(userData[0].role_id)
-      })
+    let userData = await Admin.findAll({
+      where: creds
+    })
+
+    if (userData.length) {
+      const { status, id, role_id } = userData[0]
+
+      if (status == '1') {
+        const tokenData = await functions.generateToken(id)
+
+        res.status(200).json({
+          error: false,
+          message: 'User Logged In successfully',
+          accessToken: tokenData.accessToken,
+          userData: tokenData.userData,
+          permissions: await functions.getPermissions(role_id)
+        })
+      } else {
+        res.status(200).json({
+          error: true,
+          message: 'Account is blocked or not exist.',
+          data: []
+        })
+      }
     } else {
       res.status(200).json({
         error: true,
-        message: 'Account is blocked or not exist.',
+        message: 'Invalid Username and Password.',
         data: []
       })
     }
-  } else {
-    res.status(200).json({
+  } catch (error) {
+    res.status(500).json({
       error: true,
-      message: 'Invalid Username and Password.',
+      message: 'Internal Server Error.',
       data: []
     })
   }
-  res.end()
 }
 
-const authMe = (req, res) => {
+const authMe = async (req, res) => {
   const { jwtConfig } = constants
-  const authHeader = req.headers.authorization
-  let token
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    token = authHeader.substring(7, authHeader.length)
-  } else {
-    //Error
-    return res
-      .status(401)
-      .json({ error: { error: 'Invalid User' } })
-      .end()
-  }
 
-  jwt.verify(token, jwtConfig.secret, async (err, decoded) => {
-    if (err) {
-      return res
-        .status(401)
-        .json({ error: { error: 'Invalid User' } })
-        .end()
+  try {
+    const authHeader = req.headers.authorization
+    let token
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7, authHeader.length)
     } else {
-      const userId = decoded.id
-      const userData = await knex('admins').where({ id: userId })
-      delete userData[0].password
-      userData[0].role = 'admin'
-
-      return res.status(201).json({ userData: userData[0] }).end()
+      return res.status(401).json({ error: { error: 'Invalid User' } })
     }
-  })
+
+    jwt.verify(token, jwtConfig.secret, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: { error: 'Invalid User' } })
+      } else {
+        const userId = decoded.id
+        const userData = await Admin.findByPk(userId)
+
+        if (userData) {
+          const modifiedUserData = {
+            ...userData.toJSON(),
+            role: 'admin',
+            password: undefined
+          }
+
+          return res.status(201).json({ userData: modifiedUserData }).end()
+        } else {
+          return res.status(404).json({ error: { error: 'User not found' } })
+        }
+      }
+    })
+  } catch (error) {
+    console.error(error)
+
+    return res.status(500).json({ error: { error: 'Internal Server Error' } })
+  }
 }
 
 const getUserDetail = async (req, res) => {
@@ -110,7 +130,7 @@ const changePassword = async (req, res) => {
     const userDetails = await model.getAdminDetails({ id: user_id })
     if (md5(old_password) === userDetails[0].password && userDetails[0]) {
       if (new_password == confirm_password) {
-        const update = await model.updateAdmin({ id: user_id }, { password: md5(new_password) })
+        const update = await model.updateAdminChange({ id: user_id }, { password: md5(new_password) })
         if (update) {
           const body = `<b> Hi ${userDetails[0].firstname} ${userDetails[0].lastname}, </b><br>
                     Your password has been changed successfully!<br><br>

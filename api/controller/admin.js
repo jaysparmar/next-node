@@ -1,16 +1,13 @@
 const md5 = require('md5')
-const knex = require('../config/mysql_db.js')
-const model = require('../model/admin.js')
-const model1 = require('../model/admin_sequelize.js')
+const model = require('../model/admin_sequelize.js')
 const validation = require('../validation/admin.js')
 const Admin = require('../models/Admin.js')
+const Role = require('../models/Roles.js')
 
 // Function to create a new admin user
 const createAdminUser = async (req, res) => {
   try {
     const { firstname, lastname, email, password, role_id, role } = req.body
-
-    console.log(req.body)
 
     const data = {
       firstname,
@@ -33,7 +30,7 @@ const createAdminUser = async (req, res) => {
       })
     }
 
-    const checkEmail = await model1.getUserDetail({ email })
+    const checkEmail = await model.getUserDetail({ email })
 
     if (checkEmail) {
       return res.status(req.successStatus).json({
@@ -64,9 +61,9 @@ const paginateAdmin = async (req, res) => {
     }
     let { offset = 0, limit = 10, order = 'asc', sort = 'id', search, status } = req.body
     let searchFrom = ['firstname', 'lastname', 'email']
-    const total = await model1.paginateAdminTotal(searchFrom, search, status)
+    const total = await model.paginateAdminTotal(searchFrom, search, status)
 
-    const rows = await model1.paginateAdmin(limit, offset, searchFrom, status, sort, search, order)
+    const rows = await model.paginateAdmin(limit, offset, searchFrom, status, sort, search, order)
 
     let dataRows = []
     if (order === 'asc') {
@@ -127,7 +124,7 @@ const updateAdmin = async (req, res) => {
       })
     }
 
-    const checkEmail = await model1.checkEmail({ email }, { id })
+    const checkEmail = await model.checkEmail({ email }, { id })
 
     if (checkEmail.length) {
       return res.status(200).json({
@@ -146,7 +143,7 @@ const updateAdmin = async (req, res) => {
     }
     if (password) updateData.password = md5(password)
 
-    const update = await model1.updateAdmin({ id }, updateData)
+    const update = await model.updateAdmin({ id }, updateData)
 
     if (update) {
       return res.json({
@@ -209,13 +206,25 @@ const modulesListing = async (req, res) => {
 }
 
 const getPermissions = async (req, res) => {
-  const roles = await knex('roles').where({ id: req.login_user.role_id })
-  await knex('admins').where({ id: req.login_user.id }).update({ permission_reset: '0' })
-  if (roles.length === 0) {
-    return res.json([])
-  }
+  try {
+    // Fetch the role associated with the logged-in user's role_id
+    const roles = await Role.findAll({ where: { id: req.login_user.role_id } })
 
-  res.json(JSON.parse(roles[0].permissions)).end()
+    // Update the admin's permission_reset field to '0'
+    await Admin.update({ permission_reset: '0' }, { where: { id: req.login_user.id } })
+
+    // If no roles found, respond with an empty array
+    if (roles.length === 0) {
+      return res.json([])
+    }
+
+    // Respond with the parsed permissions of the first role found
+    res.json(JSON.parse(roles[0].permissions)).end()
+  } catch (error) {
+    // Handle any errors that occur during the process
+    console.log(error)
+    res.status(500).json({ error: true, message: 'Something went wrong', data: error })
+  }
 }
 
 module.exports = {

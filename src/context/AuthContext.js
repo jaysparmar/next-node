@@ -75,8 +75,6 @@ const AuthProvider = ({ children }) => {
           ? window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.accessToken)
           : null
 
-        console.log(router.query.returnUrl)
-
         const returnUrl =
           router.query.returnUrl == '/logout/' || router.query.returnUrl == '/logout' ? '/' : router.query.returnUrl
 
@@ -84,7 +82,7 @@ const AuthProvider = ({ children }) => {
         params.rememberMe ? window.localStorage.setItem('userData', JSON.stringify(response.data.userData)) : null
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
         axios
-          .post(`${themeConfig.backendUrl}/api/admin/permissions/get`, null, {
+          .post(`${themeConfig.backendUrl}/api/admin/permissions-get`, null, {
             headers: {
               Authorization: `Bearer ${response.data.accessToken}`
             }

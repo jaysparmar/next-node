@@ -1,10 +1,23 @@
 import Error401 from 'src/pages/401'
 import { store } from 'src/store'
 
-const getPermissions = () => {
-  const state = store.getState()
+// const getPermissions = () => {
+//   const state = store.getState()
 
-  return state.permissions.userPermissions
+//   return state.permissions.userPermissions
+// }
+
+const getPermissions = () => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    // Check if window object is defined (ensures client-side environment) and if localStorage is available
+    const permissionsJSON = localStorage.getItem('userPermissions')
+
+    return permissionsJSON ? JSON.parse(permissionsJSON) : []
+  } else {
+    console.error('localStorage is not available. Permissions cannot be retrieved.')
+
+    return []
+  }
 }
 
 const validateView = (View, module, permission = null) => {

@@ -17,6 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import { DataGrid } from '@mui/x-data-grid'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import { fetchPermissions } from 'src/store/apps/permissions'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -32,6 +33,7 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 
 // ** Actions Imports
 import { fetchData } from 'src/store/apps/permissions'
+import api from 'src/interceptors/api'
 
 const colors = {
   support: 'info',
@@ -48,33 +50,27 @@ const defaultColumns = [
     minWidth: 240,
     headerName: 'Name',
     renderCell: ({ row }) => <Typography sx={{ color: 'text.secondary' }}>{row.name}</Typography>
-  },
-  {
-    flex: 0.35,
-    minWidth: 290,
-    field: 'assignedTo',
-    headerName: 'Assigned To',
-    renderCell: ({ row }) => {
-      return row.assignedTo.map((assignee, index) => (
-        <CustomChip
-          rounded
-          size='small'
-          key={index}
-          skin='light'
-          color={colors[assignee]}
-          label={assignee.replace('-', ' ')}
-          sx={{ '& .MuiChip-label': { textTransform: 'capitalize' }, '&:not(:last-of-type)': { mr: 3 } }}
-        />
-      ))
-    }
-  },
-  {
-    flex: 0.25,
-    minWidth: 210,
-    field: 'createdDate',
-    headerName: 'Created Date',
-    renderCell: ({ row }) => <Typography sx={{ color: 'text.secondary' }}>{row.createdDate}</Typography>
   }
+
+  // {
+  //   flex: 0.35,
+  //   minWidth: 290,
+  //   field: 'assignedTo',
+  //   headerName: 'Assigned To',
+  //   renderCell: ({ row }) => {
+  //     return row.assignedTo.map((assignee, index) => (
+  //       <CustomChip
+  //         rounded
+  //         size='small'
+  //         key={index}
+  //         skin='light'
+  //         color={colors[assignee]}
+  //         label={assignee.replace('-', ' ')}
+  //         sx={{ '& .MuiChip-label': { textTransform: 'capitalize' }, '&:not(:last-of-type)': { mr: 3 } }}
+  //       />
+  //     ))
+  //   }
+  // },
 ]
 
 const PermissionsTable = () => {
@@ -87,13 +83,26 @@ const PermissionsTable = () => {
   // ** Hooks
   const dispatch = useDispatch()
   const store = useSelector(state => state.permissions)
+
   useEffect(() => {
-    dispatch(
-      fetchData({
-        q: value
-      })
-    )
-  }, [dispatch, value])
+    dispatch(fetchPermissions())
+  }, [dispatch])
+
+  // const setPermission = () => {
+  //   const response = api.post('/api/admin/permissions-get')
+
+  //   dispatch(fetchPermission(response.data))
+  // }
+
+  // setPermission()
+
+  // useEffect(() => {
+  //   dispatch(
+  //     fetchData({
+  //       q: value
+  //     })
+  //   )
+  // }, [dispatch, value])
 
   const handleFilter = useCallback(val => {
     setValue(val)
@@ -131,6 +140,11 @@ const PermissionsTable = () => {
     }
   ]
 
+  const transformedData = store.data.map((permission, index) => ({
+    id: index,
+    name: permission
+  }))
+
   return (
     <>
       <Grid container spacing={6}>
@@ -153,7 +167,7 @@ const PermissionsTable = () => {
             <TableHeader value={value} handleFilter={handleFilter} />
             <DataGrid
               autoHeight
-              rows={store.data}
+              rows={transformedData}
               columns={columns}
               disableRowSelectionOnClick
               pageSizeOptions={[10, 25, 50]}

@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "next-node-sequelize",
+    "database": "seq_trial",
     "host": "",
     "dialect": "mysql"
   },

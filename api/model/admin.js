@@ -1,81 +1,81 @@
-const knex = require('../config/mysql_db.js')
+// const knex = require('../config/mysql_db.js')
 
-const table = 'admins'
-const adminRoleTable = 'roles'
+// const table = 'admins'
+// const adminRoleTable = 'roles'
 
-const insertAdmin = data => {
-  return knex(table).insert(data)
-}
+// const insertAdmin = data => {
+//   return knex(table).insert(data)
+// }
 
-const updateAdmin = (id, data) => {
-  return knex(table).where(id).update(data)
-}
+// const updateAdmin = (id, data) => {
+//   return knex(table).where(id).update(data)
+// }
 
-const deleteAdmin = where => {
-  return knex(table).where(where).update({ status: '2' })
-}
+// const deleteAdmin = where => {
+//   return knex(table).where(where).update({ status: '2' })
+// }
 
-const getAdminDetails = where => {
-  return knex.select('*').from(table).where(where)
-}
+// const getAdminDetails = where => {
+//   return knex.select('*').from(table).where(where)
+// }
 
-const getUserDetail = where => {
-  return knex(table).select('id', 'firstname', 'lastname', 'email', 'status').where(where)
-}
+// const getUserDetail = where => {
+//   return knex(table).select('id', 'firstname', 'lastname', 'email', 'status').where(where)
+// }
 
-const paginateAdmin = (limit, offset, searchFrom, status, sort, search, order) => {
-  let rows = knex(table).select(
-    `${table}.id`,
-    `${table}.firstname`,
-    `${table}.lastname`,
-    `${table}.email`,
-    `${table}.status`
-  )
+// const paginateAdmin = (limit, offset, searchFrom, status, sort, search, order) => {
+//   let rows = knex(table).select(
+//     `${table}.id`,
+//     `${table}.firstname`,
+//     `${table}.lastname`,
+//     `${table}.email`,
+//     `${table}.status`
+//   )
 
-  if (status) rows.where(`${table}.status`, `${status}`)
+//   if (status) rows.where(`${table}.status`, `${status}`)
 
-  // rows.where({type: "admin"})
+//   // rows.where({type: "admin"})
 
-  rows = rows.where(query => {
-    if (search) {
-      searchFrom.map(val => {
-        query.orWhereILike(val, `%${search}%`)
-      })
-    }
-  })
-  rows = rows.orderBy(sort, order).limit(limit).offset(offset)
+//   rows = rows.where(query => {
+//     if (search) {
+//       searchFrom.map(val => {
+//         query.orWhereILike(val, `%${search}%`)
+//       })
+//     }
+//   })
+//   rows = rows.orderBy(sort, order).limit(limit).offset(offset)
 
-  return rows
-}
+//   return rows
+// }
 
-const paginateAdminTotal = async (searchFrom, search, status) => {
-  let results = knex(table)
+// const paginateAdminTotal = async (searchFrom, search, status) => {
+//   let results = knex(table)
 
-  if (status) results = results.where('status', status)
+//   if (status) results = results.where('status', status)
 
-  results = results.where(query => {
-    if (search) {
-      searchFrom.map(val => {
-        query.orWhereILike(val, `%${search}%`)
-      })
-    }
-  })
-  const total = await results.count(`${table}.id as total`).first()
+//   results = results.where(query => {
+//     if (search) {
+//       searchFrom.map(val => {
+//         query.orWhereILike(val, `%${search}%`)
+//       })
+//     }
+//   })
+//   const total = await results.count(`${table}.id as total`).first()
 
-  return total
-}
+//   return total
+// }
 
-const checkEmail = (where, whereNot) => {
-  return knex.select('email').from(table).where(where).whereNot(whereNot)
-}
+// const checkEmail = (where, whereNot) => {
+//   return knex.select('email').from(table).where(where).whereNot(whereNot)
+// }
 
-module.exports = {
-  insertAdmin,
-  updateAdmin,
-  deleteAdmin,
-  getAdminDetails,
-  getUserDetail,
-  paginateAdmin,
-  paginateAdminTotal,
-  checkEmail
-}
+// module.exports = {
+//   insertAdmin,
+//   updateAdmin,
+//   deleteAdmin,
+//   getAdminDetails,
+//   getUserDetail,
+//   paginateAdmin,
+//   paginateAdminTotal,
+//   checkEmail
+// }

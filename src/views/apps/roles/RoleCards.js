@@ -113,7 +113,7 @@ const RolesCards = () => {
       })
     }
 
-    return api.post('/api/role/update', { id: updateId.id, roleName, permissions: selectedCheckbox }).then(res => {
+    return api.post('/api/role/update', { id: updateId, roleName, permissions: selectedCheckbox }).then(res => {
       setroles()
 
       if (res.data.error) {
@@ -125,11 +125,23 @@ const RolesCards = () => {
     })
   }
 
+  const handleDeleteRole = id => {
+    return api.post('/api/role/delete', { id: id }).then(res => {
+      setroles()
+
+      if (res.data.error) {
+        return toast.error(res.data.message)
+      }
+      toast.success(res.data.message)
+    })
+  }
+
   const setroles = () => {
     api.post('/api/role/listing').then(res => {
       setCardData(res.data.data.cardData)
     })
   }
+
   useEffect(() => {
     if (selectedCheckbox.length > 0 && selectedCheckbox.length < totalModules) {
       setIsIndeterminateCheckbox(true)
@@ -183,7 +195,7 @@ const RolesCards = () => {
                   sx={{ color: 'primary.main', textDecoration: 'none' }}
                   onClick={e => {
                     e.preventDefault()
-                    setUpdateId(item)
+                    setUpdateId(item.id)
                     handleClickOpen(cardData[index])
                     setDialogTitle('Edit')
                   }}
@@ -191,9 +203,21 @@ const RolesCards = () => {
                   Edit Role
                 </Typography>
               </Box>
-              <IconButton size='small' sx={{ color: 'text.disabled' }}>
-                <Icon icon='tabler:copy' />
-              </IconButton>
+              <Box>
+                <IconButton size='small' sx={{ color: 'text.disabled' }}>
+                  <Icon icon='tabler:copy' />
+                </IconButton>
+                <IconButton
+                  size='small'
+                  onClick={e => {
+                    e.preventDefault()
+                    handleDeleteRole(item.id)
+                  }}
+                  sx={{ color: 'red' }}
+                >
+                  <Icon icon='tabler:trash' />
+                </IconButton>
+              </Box>
             </Box>
           </CardContent>
         </Card>

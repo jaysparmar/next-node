@@ -9,18 +9,16 @@ const cors = require('cors')
 const authorization = require('./api/routes/authorization.js')
 const role = require('./api/routes/role.js')
 const admin = require('./api/routes/admin.js')
-const location = require('./api/routes/location.js')
 const verifyToken = require('./api/middleware/jwt.js')
 const constants = require('./api/helpers/constants.js')
 const { authMe } = require('./api/controller/authorization.js')
 const { sendEmail } = require('./api/helpers/functions.js')
-const orders = require('./api/routes/orders.js')
 
 const mode = process.env.NEXT_PUBLIC_MODE // dev, production
 const port = mode === 'production' ? 3000 : process.env.NEXT_PUBLIC_DEV_SERVER_PORT
 const sub_uri = constants.SUB_URI
+
 const sequelize = require('./api/database/database.js')
-const userRoutes = require('./api/routes/userRoutes.js')
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = 'localhost'
@@ -30,23 +28,15 @@ let handle
 const createApp = async () => {
   const app = express()
 
-  // Define your Express middleware and routes here
   app.use(cors())
   app.use(express.json())
   app.use(fileUpload())
   app.use(constants.STATIC_PATH, express.static(path.join(__dirname, 'public')))
 
-  //sequelize remain
-
-  app.use(`${sub_uri}/authorization`, authorization)
-  app.use(`${sub_uri}/role`, verifyToken.verifyToken, role)
-  app.use(`${sub_uri}/location`, verifyToken.verifyToken, location)
-  app.use(`${sub_uri}/order`, orders)
   app.post('/auth/me', authMe)
-
-  //sequelize conversion done bellow
   app.use(`${sub_uri}/admin`, verifyToken.verifyToken, admin)
-  app.use(`${sub_uri}/users`, userRoutes)
+  app.use(`${sub_uri}/role`, verifyToken.verifyToken, role)
+  app.use(`${sub_uri}/authorization`, authorization)
 
   app.get('/app-bar/search/', (req, res) => {
     const { q = '' } = req.query
@@ -111,7 +101,6 @@ const createApp = async () => {
     res.status(200).json(response)
   })
 
-  // For all other routes, let Next.js handle them
   if (mode === 'production') {
     app.get('*', (req, res) => {
       return handle(req, res)

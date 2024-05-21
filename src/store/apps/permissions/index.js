@@ -2,15 +2,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 // ** Axios Imports
-import axios from 'axios'
+import api from 'src/interceptors/api'
 
-// ** Fetch Invoices
-export const fetchData = createAsyncThunk('appPermissions/fetchData', async params => {
-  const response = await axios.get('/apps/permissions/data', {
-    params
-  })
+// ** Fetch Permissions Thunk
+export const fetchPermissions = createAsyncThunk('appPermissions/fetchPermissions', async () => {
+  const response = await api.post('/api/admin/permissions-get')
 
-  return response.data
+  return response
 })
 
 export const appPermissionsSlice = createSlice({
@@ -25,15 +23,18 @@ export const appPermissionsSlice = createSlice({
   reducers: {
     updatePermissions: (state, action) => {
       state.userPermissions = action.payload
+
+      localStorage.setItem('userPermissions', JSON.stringify(action.payload))
     }
   },
-
   extraReducers: builder => {
-    builder.addCase(fetchData.fulfilled, (state, action) => {
-      state.data = action.payload.permissions
-      state.params = action.payload.params
-      state.allData = action.payload.allData
-      state.total = action.payload.total
+    builder.addCase(fetchPermissions.fulfilled, (state, action) => {
+      state.data = action.payload.data
+
+      // state.params = action.payload.params
+      state.allData = action.payload.data
+
+      // state.total = action.payload.total
     })
   }
 })
