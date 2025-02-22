@@ -69,7 +69,7 @@
     "moment": "^2.29.4",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
-    "next": "13.3.2",
+    "next": "14.2.21",
     "nodemailer": "^6.7.8",
     "nodemon": "^3.0.1",
     "nprogress": "0.2.0",
